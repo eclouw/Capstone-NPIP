@@ -85,7 +85,7 @@ function App() {
             borderWidth: 2,
           }]
         });
-        
+        console.log("Fetched mean data")
         fetchRipeData()
       } catch(e){
         console.log(e);
@@ -128,9 +128,13 @@ function App() {
         }]
       });
       
-      
-      fetchTimeDataCountry1()
-      fetchTimeDataCountry2()
+      console.log("Fetched ripe data")
+      await fetchTimeDataCountry1()
+      await fetchTimeDataCountry2()
+
+      setLoadingData(false)
+      //Set have data to enable the graphs on the ui
+      setHaveData(true)
       
       
     }
@@ -169,7 +173,7 @@ function App() {
           borderWidth: 2,
         }]
       });
-
+      console.log("Fetched country 1 data")
       
     }
 
@@ -208,9 +212,9 @@ function App() {
         }]
       });
 
-      setLoadingData(false)
-      //Set have data to enable the graphs on the ui
-      setHaveData(true)
+      console.log("fetched country 2 data")
+
+      
 
       
     }
