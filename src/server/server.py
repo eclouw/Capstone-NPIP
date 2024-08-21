@@ -53,7 +53,7 @@ def getMLabData(country1, country2):
     result_dataframe_MLAB = result_MLAB.to_dataframe()
 
     #files not actually needed
-    result_dataframe_MLAB.to_json('requestedMetricsMLAB.json', orient = 'records', lines = True) 
+    #result_dataframe_MLAB.to_json('requestedMetricsMLAB.json', orient = 'records', lines = True) 
     return result_dataframe_MLAB
     
 
@@ -91,7 +91,7 @@ def getRipeData():
 
     result_dataframe_Ripe = result_Ripe.to_dataframe()
     #files not actually needed
-    result_dataframe_Ripe.to_json('requestedMetricsRipe.json', orient = 'records', lines = True)
+    #result_dataframe_Ripe.to_json('requestedMetricsRipe.json', orient = 'records', lines = True)
 
     return (result_dataframe_Ripe.to_json(orient="records"))
     
