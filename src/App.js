@@ -8,7 +8,9 @@ import PieChart from './components/PieChart.js';
 import NavBar  from './components/NavBar.js';
 import Button from './components/Button.tsx';
 import InputField from './components/InputField.tsx';
+import GMap from './components/GMap.js'
 import axios from 'axios';
+import { MAP_PANE } from '@react-google-maps/api';
 
 
 
@@ -305,7 +307,9 @@ function App() {
     )}
 
     
-    
+    <div class="map-container">
+      <GMap/>
+    </div>
     
   </div>
   )

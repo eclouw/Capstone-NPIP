@@ -9,6 +9,13 @@
   pointer-events: none;
 }
 
+.map-container {
+  height: 500px;
+  width: 500px;
+  align-items: center;
+  display: flex;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
