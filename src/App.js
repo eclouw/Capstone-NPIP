@@ -1,6 +1,6 @@
 
 import './App.css';
-import BarChart from './components/BarChart';
+import BarChart from './components/BarChart.js';
 import React, { useEffect, useState, onChange } from "react";
 import Chart from 'chart.js/auto';
 import LineChart from './components/LineChart.js';
@@ -8,7 +8,7 @@ import PieChart from './components/PieChart.js';
 import NavBar  from './components/NavBar.js';
 import Button from './components/Button.tsx';
 import InputField from './components/InputField.tsx';
-import GMap from './components/GMap.js'
+import GMap from './components/GMap.tsx'
 import axios from 'axios';
 import { MAP_PANE } from '@react-google-maps/api';
 
@@ -16,6 +16,7 @@ import { MAP_PANE } from '@react-google-maps/api';
 
 
 function App() {
+  
   //MLAB DATA
   const[LatencyData, setLatencyData] = useState([])
   const[LoadindData, setLoadingData] = useState(false)
@@ -302,11 +303,7 @@ function App() {
         </div>
         
           </>
-
-        
     )}
-
-    
     <div class="map-container">
       <GMap/>
     </div>
