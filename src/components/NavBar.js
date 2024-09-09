@@ -1,12 +1,17 @@
 import React from "react";
 import './navBar.css'
+import { Link } from "react-router-dom";
 
-//A navbar for the webapp to make it look nicer, should maybe have more functionality in future than just looking pretty
 function NavBar(){
   return (
     <div class="navbar">
-    <h1>NPIP</h1>
-</div>
+      <nav>
+        <ul>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/PageGoogleMaps">Maps</Link></li>
+        </ul>
+      </nav>
+    </div>
     
   )
 }

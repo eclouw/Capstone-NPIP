@@ -10,7 +10,6 @@ import Button from './components/Button.tsx';
 import InputField from './components/InputField.tsx';
 import GMap from './components/GMap.tsx'
 import axios from 'axios';
-import { MAP_PANE } from '@react-google-maps/api';
 
 
 

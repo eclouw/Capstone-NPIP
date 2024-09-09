@@ -1,44 +1,38 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing: border-box;
-}
 
-
-body{
-    font-family: "Roboto", sans-serif;
-    position: relative;
-    
-}
-
-/* NAVBAR SECTION */
 .navbar{
-    width: 100%;
-    background: #32CD32;
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.navbar h1{
-    margin-right: 20px;
+    width: 100%; /* Take up 100 percent screen width */
+    background: green; /*TODO CHANGE THIS COLOUR */
+    display: flex; /* use flex layout */
+    align-items: center; /* Align items to center of the navbar */
+    padding: 20px; /* Add padding to the navbar */
+    
+    
 }
 
 nav{
-    
-    display: inline-block;
-    width: 100%;
+    text-align: right; /* Align texts to the right */
+    display:inline-block;
+    width: 100%; /* Make sure that it takes up all of navbar so it can actually be aligned to the right */
+
 }
 
 nav ul{
-    list-style-type: none;
+    list-style-type: none; /* Remove unordered list styling */
+    
+   
 }
 
 nav ul li{
-    margin-right: 20px;
-    text-align: right;
+    margin-right: 20px; /* Add a right margin of 20px */
     display: inline-block;
-    
-    
+    font-size: 20px;
+}
+
+nav li:hover{
+    background-color: aqua; /*TODO CHANGE THIS COLOUR */
+}
+
+nav a{
+    color: white;
+    text-decoration: none;
 }
