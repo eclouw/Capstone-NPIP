@@ -4,7 +4,7 @@ import NavBar from "../NavBar.js";
 
 
 
-
+//The home page, need to put things in here
 function PageHome(){
     return (
         <>

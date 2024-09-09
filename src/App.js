@@ -227,9 +227,7 @@ function App() {
 
   //The HTML elemts to display
   return (<div className='App'>
-    <div>
-    <NavBar/> 
-    </div>
+    
     <div style={{margin:20}}><input type={Text} name="country1" labelText='Country 1' value={country1Input} onChange={setCountry1}/></div>
     <div style={{margin:20}}><input type={Text} name="country2" labelText='Country 2' value={country2Input} onChange={setCountry2}/></div>
     <div style={{margin:20}}><Button buttonType = 'btn btn-primary' onClick={fetchData}>
