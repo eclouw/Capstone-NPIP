@@ -3,9 +3,11 @@ import './navBar.css'
 import { Link } from "react-router-dom";
 
 //The navbar to navigate between different pages
+//Need to fix the formatting on the NPIP title 
 function NavBar(){
   return (
     <div class="navbar">
+      <h1>NPIP</h1>
       <nav>
         <ul>
           <li><Link to="/">Home</Link></li>

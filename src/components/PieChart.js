@@ -5,9 +5,7 @@ import { Chart as ChartJS } from 'chart.js';
 
 
 //Piechart from Chart.js
-function PieChart({chartData}){
-
-    
+function PieChart({chartData}){  
   return (
     <Pie data={chartData}/>
   )
