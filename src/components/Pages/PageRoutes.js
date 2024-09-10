@@ -1,4 +1,5 @@
 import NavBar from "../NavBar";
+import PageMLAB from "./PageMLAB";
 import PageGoogleMaps from "./PageGoogleMaps";
 import PageHome from "./PageHome";
 import { Route, Routes } from "react-router-dom";
@@ -15,6 +16,7 @@ function PageRoutes(){
                 <Route path="/" element={<PageHome/>} />
                 <Route path="/PageGoogleMaps" element={<PageGoogleMaps/>} />
                 <Route path="/App" element={<App/>} />
+                <Route path="/PageMLAB" element={<PageMLAB/>}/>
             </Routes>
         </div>
         </>

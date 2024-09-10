@@ -20,9 +20,7 @@ const locations: Poi[] = [
 ];
 
 const GMap = () =>{
-    
-    
-    
+
     return(
       <>
       <div className='map-container'>
