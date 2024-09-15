@@ -1,9 +1,10 @@
 import NavBar from "../NavBar";
-import PageMLAB from "./PageMLAB";
+import PageMLAB from "./PageMLAB.tsx";
 import PageGoogleMaps from "./PageGoogleMaps";
 import PageHome from "./PageHome";
 import { Route, Routes } from "react-router-dom";
 import App from "../../App";
+import LeafletTest from "../../LeafletTest.js";
 
 //Manages all the routing between pages
 //The route to app below is just for testing things

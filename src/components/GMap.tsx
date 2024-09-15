@@ -21,6 +21,10 @@ const locations: Poi[] = [
 
 const GMap = () =>{
 
+  function test(){
+
+  }
+
     return(
       <>
       <div className='map-container'>
@@ -31,8 +35,8 @@ const GMap = () =>{
           defaultCenter={ { lat: -0.00665793088812781, lng: 17.856514443765818 } }
           onCameraChanged={ (ev: MapCameraChangedEvent) =>
           console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
-          }>
-            <GMapMarkers pois={locations}></GMapMarkers>
+          }> 
+            <GMapMarkers pois={locations} ></GMapMarkers>
         </Map>
 
         </APIProvider>

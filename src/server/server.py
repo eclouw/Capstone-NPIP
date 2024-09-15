@@ -22,12 +22,14 @@ def getDataFiltered(countryCode1, countryCode2):
 #Get the default data set, which is South Africa and Kenya
 @app.route("/dataset", methods=['GET', 'POST'])
 def getDefaultMLabData():
+    print("Getting default data")
     return getMLabData("South Africa", "Kenya") #get default dataset of south africa and kenya if no specific filter
     
 
 #Get MLab mean data for specifid countries
 @app.route("/dataset/mean/<countryCode1>/<countryCode2>", methods=['GET', 'POST'])
 def getMeanLab(countryCode1, countryCode2):
+    print("getting country2")
     result_dataframe_MLAB= getMLabData(countryCode1, countryCode2)
     mean_mlab = result_dataframe_MLAB.groupby(['ClientCountry']).mean()
     mean_mlab = mean_mlab.reset_index()
@@ -35,6 +37,7 @@ def getMeanLab(countryCode1, countryCode2):
 
 @app.route("/dataset/raw/<countryCode>", methods=['GET', 'POST'])
 def getRawMLab(countryCode):
+    print("Getting country1")
     result_dataframe_MLAB= getMLabDataOnce(countryCode)
     return (result_dataframe_MLAB.to_json(orient='records'))
 
@@ -59,6 +62,7 @@ def getMLabData(country1, country2):
 
 #Get MLabData for one country
 def getMLabDataOnce(country):
+    print("getting data from one country")
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'avian-buffer-431609-f7-13ef164881ad.json'
 
     storage_client = bigquery.Client()
@@ -75,6 +79,7 @@ def getMLabDataOnce(country):
 #Get data from RipeAtlas
 @app.route("/dataset/ripe", methods=['GET', 'POST'])
 def getRipeData():
+    print("getting ripe data")
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'avian-buffer-431609-f7-13ef164881ad.json'
 
     storage_client = bigquery.Client()
@@ -101,4 +106,4 @@ def getRipeData():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

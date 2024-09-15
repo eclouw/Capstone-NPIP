@@ -11,8 +11,8 @@ function NavBar(){
       <nav>
         <ul>
           <li><Link to="/">Home</Link></li>
-          <li><Link to="/PageGoogleMaps">Maps</Link></li>
-          <li><Link to="/PageMLAB">Maps</Link></li>
+          <li><Link to="/PageGoogleMaps">Ripe Atlas Data</Link></li>
+          <li><Link to="/PageMLAB">MLAB Data</Link></li>
           <li><Link to="/App">Testing</Link></li>
         </ul>
       </nav>

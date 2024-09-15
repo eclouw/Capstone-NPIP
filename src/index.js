@@ -13,7 +13,6 @@ root.render(
     <BrowserRouter>
     < PageRoutes/>
     </BrowserRouter>
-    
   </React.StrictMode>
 );
 

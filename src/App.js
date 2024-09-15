@@ -1,7 +1,7 @@
 
 import './App.css';
 import BarChart from './components/BarChart.js';
-import React, { useEffect, useState, onChange } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Chart from 'chart.js/auto';
 import LineChart from './components/LineChart.js';
 import PieChart from './components/PieChart.js';
@@ -10,11 +10,137 @@ import Button from './components/Button.tsx';
 import InputField from './components/InputField.tsx';
 import GMap from './components/GMap.tsx'
 import axios from 'axios';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import mapboxgl from 'mapbox-gl';
+import geoJsonAfricaStorage from './components/geoJsonAfricaStorage.js';
 
 
 
 
 function App() {
+  const afrdata = {geoJsonAfricaStorage}
+  console.log({afrdata})
+  //MAPBOX STUFF
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZWxvdXciLCJhIjoiY20xMG5zYXN0MDdhcTJycjVoYXg3Y2VrbCJ9.m9NoEyiaJx-A2AXDHIR6Ew';
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const [lng, setLng] = useState(0);
+  const [lat, setLat] = useState(17);
+  const [zoom, setZoom] = useState(1);
+
+  useEffect(() => {
+    
+    
+    if (map.current) return; // initialize map only once
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/standard',
+      center: [lng, lat],
+      zoom: zoom
+    });
+
+    map.current.on('load', () => {
+      map.current.addSource('countries', {
+        type: 'geojson',
+        data: './Data/afrtest.geojson'
+      });
+
+      map.current.addSource('points', {
+        type: 'geojson',
+        data: '/data/test.geojson'
+      });
+
+      map.current.addLayer({
+        id: 'testPoints',
+        type: 'circle',
+        source:'points',
+        paint: {
+          'circle-radius': 6,
+          'circle-color': '#B42222'
+        }
+      })
+
+      map.current.addSource('maine', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            // These coordinates outline Maine.
+            coordinates: [
+              [
+                [-67.13734, 45.13745],
+                [-66.96466, 44.8097],
+                [-68.03252, 44.3252],
+                [-69.06, 43.98],
+                [-70.11617, 43.68405],
+                [-70.64573, 43.09008],
+                [-70.75102, 43.08003],
+                [-70.79761, 43.21973],
+                [-70.98176, 43.36789],
+                [-70.94416, 43.46633],
+                [-71.08482, 45.30524],
+                [-70.66002, 45.46022],
+                [-70.30495, 45.91479],
+                [-70.00014, 46.69317],
+                [-69.23708, 47.44777],
+                [-68.90478, 47.18479],
+                [-68.2343, 47.35462],
+                [-67.79035, 47.06624],
+                [-67.79141, 45.70258],
+                [-67.13734, 45.13745]
+              ]
+            ]
+          }
+        }
+      });
+
+      map.current.addLayer({
+        id: 'maine',
+        type: 'fill',
+        source: 'maine',
+        layout: {},
+        paint: {
+          'fill-color': '#0080ff',
+          'fill-opacity': 0.5
+        }
+      });
+
+      map.current.addLayer({
+        id: 'countries-layer',
+        type: 'fill',
+        source: 'countries',
+        layout: {},
+        paint: {
+          'fill-color': '#0080ff',
+          'fill-opacity': 0.5
+        }
+      });
+
+      map.current.addLayer({
+        id: 'countires-outline',
+        type: 'line',
+        source: 'countries',
+        layout: {},
+        paint: {
+          'line-color': '#000',
+          'line-width': 3
+        }
+      });
+
+      map.current.addLayer({
+        id: 'outline',
+        type: 'line',
+        source: 'maine',
+        layout: {},
+        paint: {
+          'line-color': '#000',
+          'line-width': 3
+        }
+      });
+    })
+  }, [])
+  
   
   //MLAB DATA
   const[LatencyData, setLatencyData] = useState([])
@@ -49,11 +175,12 @@ function App() {
     
   }
 
+
   const fetchData = async () => {
       try{
         setLoadingData(true)
         setHaveData(false)
-        const response = await axios.post('http://localhost:5000/dataset/mean/'+country1Input+'/'+country2Input) //attempt to get response from backend
+        const response = await axios.post('http://127.0.0.1:5000/dataset/mean/'+country1Input+'/'+country2Input) //attempt to get response from backend
         //Set the LatencyData to the data that was retrieved from MLab
         setLatencyData({
           labels: response.data.map((data) => data.ClientCountry),
@@ -96,7 +223,7 @@ function App() {
 
     //retrieve data from RipeAtlas
     const fetchRipeData = async () => {
-      const response = await axios.post('http://localhost:5000/dataset/ripe')
+      const response = await axios.post('http://127.0.0.1:5000/dataset/ripe')
       setRTTAverage({
         labels: response.data.map((_, index) => index + 1),
         datasets: [{
@@ -142,7 +269,7 @@ function App() {
     }
 
     const fetchTimeDataCountry1 = async () => {
-      const response = await axios.post('http://localhost:5000/dataset/raw/'+country1Input)
+      const response = await axios.post('http://127.0.0.1:5000/dataset/raw/'+country1Input)
       setCountry1LatencyTime({
         labels: response.data.map((data) => data.TimeStamp),
         datasets: [{
@@ -180,7 +307,7 @@ function App() {
     }
 
     const fetchTimeDataCountry2 = async () => {
-      const response = await axios.post('http://localhost:5000/dataset/raw/'+country2Input)
+      const response = await axios.post('http://127.0.0.1:5000/dataset/raw/'+country2Input)
       setCountry2LatencyTime({
         labels: response.data.map((data) => data.TimeStamp),
         datasets: [{
@@ -301,12 +428,17 @@ function App() {
         
           </>
     )}
-    <div class="map-container">
-      <GMap/>
-    </div>
+    
+    <div ref={mapContainer} className="map-container" />
     
   </div>
   )
 }
 
 export default App;
+
+//AfricaOnly2D
+//mapbox://styles/elouw/cm10xz51301d301pbdw8w8xa7
+
+//AfricaOnly3D
+//mapbox://styles/elouw/cm10zjo4a018v01pj2nyf68a6

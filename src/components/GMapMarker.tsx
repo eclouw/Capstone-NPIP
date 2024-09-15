@@ -1,6 +1,7 @@
 import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps"
 import React, { useCallback } from "react"
 
+
 interface Poi {
   key: string;
   location: Location;
