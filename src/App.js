@@ -34,15 +34,17 @@ function App() {
     if (map.current) return; // initialize map only once
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/standard',
+      style: 'mapbox://styles/elouw/cm10xz51301d301pbdw8w8xa7',
       center: [lng, lat],
       zoom: zoom
     });
 
+    let hoveredPolygonId = null;
+
     map.current.on('load', () => {
       map.current.addSource('countries', {
         type: 'geojson',
-        data: './Data/afrtest.geojson'
+        data: './Data/africa.geojson'
       });
 
       map.current.addSource('points', {
@@ -113,9 +115,14 @@ function App() {
         layout: {},
         paint: {
           'fill-color': '#0080ff',
-          'fill-opacity': 0.5
+          'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            1,
+            0.5
+          ]
         }
-      });
+      }, 'water');
 
       map.current.addLayer({
         id: 'countires-outline',
@@ -126,7 +133,7 @@ function App() {
           'line-color': '#000',
           'line-width': 3
         }
-      });
+      }, 'water');
 
       map.current.addLayer({
         id: 'outline',
@@ -138,6 +145,23 @@ function App() {
           'line-width': 3
         }
       });
+
+      map.current.on('mousemove', 'countries-layer', (e) => {
+        if (e.features.length > 0){
+          if (hoveredPolygonId !== null){
+            map.current.setFeatureState(
+              {source: 'countries', id: hoveredPolygonId},
+              {hover: false}
+            )
+          }
+          hoveredPolygonId = e.features[0].id;
+          map.current.setFeatureState(
+            {source: 'countries', id: hoveredPolygonId},
+            {hover: true}
+          )
+
+        }
+      })
     })
   }, [])
   
