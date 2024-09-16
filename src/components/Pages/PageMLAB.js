@@ -14,9 +14,6 @@ function PageMLAB (){
   const mapContainer = useRef(null);
   const [count, setCount] = useState(0);
   const [lng, setLng] = useState(20);
-
-
-  
   const [lat, setLat] = useState(9);
   const [zoom, setZoom] = useState(2);
   const [internalSelectedCountries, setInternalCountries] = useState([]); //ARRAY FOR STORING SELECTED COUNTRIES
