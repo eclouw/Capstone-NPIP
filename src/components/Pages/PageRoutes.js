@@ -4,6 +4,7 @@ import PageGoogleMaps from "./PageGoogleMaps";
 import PageHome from "./PageHome";
 import { Route, Routes } from "react-router-dom";
 import App from "../../App";
+import PageRipeAtlas from "./PageRipeAtlas.js";
 import './styles.css'
 
 //Manages all the routing between pages
@@ -16,7 +17,7 @@ function PageRoutes(){
             <Routes>
                 <Route path="/" element={<PageHome/>} />
                 <Route path="/PageGoogleMaps" element={<PageGoogleMaps/>} />
-                <Route path="/App" element={<App/>} />
+                <Route path="/PageRipeAtlas" element={<PageRipeAtlas/>} />
                 <Route path="/PageMLAB" element={<PageMLAB/>}/>
             </Routes>
         </div>

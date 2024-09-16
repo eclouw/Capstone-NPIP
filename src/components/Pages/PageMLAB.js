@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './styles.css';
 import axios from "axios";
+import GetMLABData from "../GetMLABData";
 
 
 function PageMLAB (){
@@ -17,6 +18,7 @@ function PageMLAB (){
   const [lat, setLat] = useState(9);
   const [zoom, setZoom] = useState(2);
   const [internalSelectedCountries, setInternalCountries] = useState([]); //ARRAY FOR STORING SELECTED COUNTRIES
+  const [countryDownloadData, setCountryDownloadData] = useState([]);
   const [moveEvent, setMoveEvent] = useState(); 
   let clickedCountryID1 = null;
   let clickedCountryID2 = null;
@@ -30,13 +32,11 @@ function PageMLAB (){
   const [graphs, setGraphs] = useState([]);
   const [MLABDATA, setMLABDATA] = useState();
   const [haveData, setHaveData] = useState(false);
+  const [haveDataCountry1, setHaveDataCountry1] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
 
-
-  //FETCH THE MLAB DATA
-  const fetchData = async() => {
-    setHaveData(false);
-    const response = await axios.post()
-  }
+  
+ 
   
 
   useEffect(() => {
@@ -154,7 +154,7 @@ function PageMLAB (){
             )
           }else{
             if (internalCount <= maxCompareCountries-1){
-              internalSelectedCountries[internalCount] = {id: e.features[0].id, name: e.features[0].properties.name};
+              internalSelectedCountries[internalCount] = {id: e.features[0].id, name: e.features[0].properties.name, code: e.features[0].properties.iso_a2_eh, download: 0, packet_loss: 0, latency: 0, upload: 0};
               setCount((prevCount) => prevCount + 1);
               internalCount = internalCount +1;
               console.log(count);
@@ -162,7 +162,10 @@ function PageMLAB (){
               map.current.setFeatureState(
                 {source: 'afr-countries', id: hoveredCountryID},
                 {clicked: true}
+                
               )
+              countrySelected(internalSelectedCountries[internalCount-1].code);
+              console.log(internalSelectedCountries[internalCount-1]);
             }
             
             
@@ -181,7 +184,48 @@ function PageMLAB (){
     
   }, [count]);
 
+  //COMMAND THAT IS RUN INITIALLY WHEN A COUNTRY IS SELECTED TO GET BASIC COUNTRY STATS
+  const countrySelected = async(countryCode)=>{
+    const result = await fetchCountryData(countryCode, '2024',);
+    setHaveData(true);
+    setLoadingData(false);
+    console.log(result);
+  }
 
+   //FETCH THE MLAB DATA WITH A SPECIFIC COMMAND
+   const fetchData = async(command) => {
+    setLoadingData(true);
+    setHaveData(false);
+    const response = await axios.post(command);
+    return response.data;
+  }
+
+  //FETCH ALL DATA FOR SPECIFIC COUNTRY
+  const fetchCountryData = async(countryCode, year, month) => {
+    var id;
+    for (let i =0; i < internalSelectedCountries.length;i++){
+      if (internalSelectedCountries[i].code == countryCode);
+      id = i;
+      console.log(i);
+    }
+    if (month == null){
+      const avDownload = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_combined_speed_mbps&table_type=download&group_by=time_year');
+      const avLatency = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_latency_ms&table_type=download&group_by=time_year');
+      const avPacketLoss = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_packet_loss&table_type=download&group_by=time_year');
+      console.log(avDownload.data[0]);
+      console.log(avLatency.data[0]);
+      console.log(avPacketLoss.data[0]);
+      internalSelectedCountries[id].download = avDownload.data[0].avg_download_speed_mbps;
+      internalSelectedCountries[id].upload = avDownload.data[0].avg_upload_speed_mbps;
+      internalSelectedCountries[id].latency = avLatency.data[0].avg_combined_latency_ms;
+      internalSelectedCountries[id].packet_loss = avPacketLoss.data[0].avg_packet_loss;
+    }else{
+      const response = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&month='+month+'&metric=avg_download_speed_mbps&metric=avg_packet_loss&table_type=download&group_by=time_year');
+      return response;
+    }
+  }
+
+  
 
   //THE HTML FOR THE PAGE
   return(
@@ -207,14 +251,34 @@ function PageMLAB (){
           {
             count > 0 &&(
               <>
-                <p>You have selected the following countries:</p>
+                <p>Below is data for the current year for the selected countries</p>
                 <div class="row">
                 {internalSelectedCountries.map(internalSelectedCountries => (
                   <div class="col-countries">
                     <h2>{internalSelectedCountries.name}</h2>
+                    
+                      <>
+                      {internalSelectedCountries.download === 0 &&(
+                        <p>Loading Data</p>
+                      )}
+                      {internalSelectedCountries.download !== 0 &&(
+                        <>
+                        <ul>
+                        <li><b>Average download speed:</b> {(internalSelectedCountries.download).toFixed(2)} Mbps</li>
+                        <li><b>Average upload speed:</b> {(internalSelectedCountries.upload).toFixed(2)} Mbps</li>
+                        <li><b>Average latency:</b> {(internalSelectedCountries.latency).toFixed(2)} ms</li>
+                        <li><b>Average packet loss:</b> {((internalSelectedCountries.packet_loss)*100).toFixed(2)}%</li>
+                      </ul>
+                      </>
+                      )}
+                      
+                      </>
+                      
+                    
                   </div>
                 ))}
                 </div>
+                
                 
                 
               </>
