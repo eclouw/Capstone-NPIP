@@ -49,5 +49,28 @@ body{
     border-right: 2px solid #000;
 }
 
+.graph{
+    background-color: #EEF4ED;
+}
+
+.accordion-button {
+    background-color: #134074 !important;
+    color: white;
+  }
+  
+  .accordion-button:focus {
+    box-shadow: none;
+  }
+  
+  .accordion-button:not(.collapsed) {
+    background-color: #134074 !important;
+    color: white;
+  }
+
+  .accordion-body{
+    background-color: #13315C !important;
+    color: white;
+  }
+
 
 
