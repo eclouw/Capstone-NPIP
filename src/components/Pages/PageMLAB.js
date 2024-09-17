@@ -226,9 +226,9 @@ function PageMLAB (){
     
     if (id != -1){
       if (month == null){
-        const avDownload = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_combined_speed_mbps&table_type=download&group_by=time_year');
-        const avLatency = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_latency_ms&table_type=download&group_by=time_year');
-        const avPacketLoss = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_packet_loss&table_type=download&group_by=time_year');
+        const avDownload = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_combined_speed_mbps&table_type=download&group_by=time_month');
+        const avLatency = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_latency_ms&table_type=download&group_by=time_month');
+        const avPacketLoss = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_packet_loss&table_type=download&group_by=time_month');
 
         const updateCountries = [...internalSelectedCountries];
         updateCountries[id].download = avDownload.data[0].avg_download_speed_mbps;
