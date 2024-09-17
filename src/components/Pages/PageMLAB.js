@@ -175,6 +175,10 @@ function PageMLAB() {
                 , heatmapSpeedUp: [{ key: '', longitude: 0.0, latitude: 0.0 }], heatmapSpeedUpReady: false
                 , heatmapLatency: [{ key: '', longitude: 0.0, latitude: 0.0 }], heatmapLatencyReady: false
                 , heatmapPacketLoss: [{ key: '', longitude: 0.0, latitude: 0.0 }], heatMapPacketLossReady: false
+                , cityDataDownload: [], cityDataReadyDownload: false
+                , cityDataLatency: [], cityDataReadyLatency: false
+                , cityDataUpload: [], cityDataReadyUpload: false
+                , cityDataPacketLoss: [], cityDataReadyPacketLoss: false
               };
               setCount((prevCount) => prevCount + 1);
               internalCount = internalCount + 1;
@@ -186,6 +190,7 @@ function PageMLAB() {
               countrySelected(internalSelectedCountries[internalCount - 1].code);
               ftchTimeSeriesDataYear(internalSelectedCountries[internalCount - 1].code);
               generateHeatMaps(internalSelectedCountries[internalCount - 1].code, '2024')
+              ftchMetricsInnerCountry(internalSelectedCountries[internalCount - 1].code, '2024')
 
             }
 
@@ -266,9 +271,6 @@ function PageMLAB() {
       const avSpeed = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&metric=avg_combined_speed_mbps&table_type=download&group_by=time_year');
       const avLatency = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&metric=avg_latency_ms&table_type=download&group_by=time_year');
       const avPacketLoss = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&metric=avg_packet_loss&table_type=download&group_by=time_year');
-      console.log(avSpeed.data);
-
-      console.log(avPacketLoss.data);
 
       avLatency.data.sort((a, b) => a.year - b.year);
       avSpeed.data.sort((a, b) => a.year - b.year);
@@ -327,9 +329,6 @@ function PageMLAB() {
       const avSpeed = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&year=' + year + '&metric=avg_combined_speed_mbps&table_type=download&group_by=time_year_month');
       const avLatency = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&year=' + year + '&metric=avg_latency_ms&table_type=download&group_by=time_year_month');
       const avPacketLoss = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&year=' + year + '&metric=avg_packet_loss&table_type=download&group_by=time_year_month');
-      console.log(avSpeed.data);
-      console.log(avLatency.data);
-      console.log(avPacketLoss.data);
 
       avLatency.data.sort((a, b) => a.month - b.month);
       avSpeed.data.sort((a, b) => a.month - b.month);
@@ -370,10 +369,6 @@ function PageMLAB() {
       updateCountries[id].packetLossOverTimeMonthReady = true;
       setInternalCountries(updateCountries);
 
-      console.log(internalSelectedCountries)
-
-
-
     }
   }
 
@@ -382,6 +377,9 @@ function PageMLAB() {
     var id = fetchId(internalSelectedCountries, countryCode);
     if (id != -1) {
       internalSelectedCountries[id].heatmapSpeedReady = false;
+      internalSelectedCountries[id].heatmapSpeedUpReady = false;
+      internalSelectedCountries[id].heatmapLatencyReady = false;
+      internalSelectedCountries[id].heatMapPacketLossReady = false;
       const avSpeed = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&year=' + year + '&metric=avg_combined_speed_mbps&table_type=download&group_by=location');
       const avLatency = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&year=' + year + '&metric=avg_latency_ms&table_type=download&group_by=location');
       const avPacketLoss = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&year=' + year + '&metric=avg_packet_loss&table_type=download&group_by=location');
@@ -408,6 +406,7 @@ function PageMLAB() {
       }
       updateCountries[id].heatmapLatencyReady = true;
       setInternalCountries(updateCountries);
+      console.log(avLatency.data)
 
       //PACKET LOSS HEATMAP DATA
       for (let i = 0; i < avPacketLoss.data.length; i++) {
@@ -415,6 +414,60 @@ function PageMLAB() {
       }
       updateCountries[id].heatMapPacketLossReady = true;
       setInternalCountries(updateCountries);
+      console.log(avPacketLoss.data)
+    }
+  }
+
+  const ftchMetricsInnerCountry = async (countryCode, year) => {
+    var id = fetchId(internalSelectedCountries, countryCode);
+    if (id != -1) {
+      internalSelectedCountries[id].cityDataReadyDownload = false;
+      internalSelectedCountries[id].cityDataReadyLatency = false;
+      internalSelectedCountries[id].cityDataReadyPacketLoss = false;
+      internalSelectedCountries[id].cityDataReadyUpload = false;
+      const avSpeed = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&year=' + year + '&metric=avg_combined_speed_mbps&table_type=download&group_by=city');
+      const avLatency = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&year=' + year + '&metric=avg_latency_ms&table_type=download&group_by=city');
+      const avPacketLoss = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country=' + countryCode + '&year=' + year + '&metric=avg_packet_loss&table_type=download&group_by=city');
+
+
+      //LATENCY OVER TIME
+      let city = avLatency.data.map(item => item.city)
+      let data = avLatency.data.map(item => item.avg_combined_latency_ms)
+      let updateCountries = [...internalSelectedCountries];
+      updateCountries[id].cityDataLatency = await arrayMapper('Latency per city', city, data)
+      updateCountries[id].cityDataReadyLatency = true;
+      setInternalCountries(updateCountries);
+
+      console.log(avLatency)
+      //DOWNLOAD SPEED OVER TIME
+      city = [];
+      city = avSpeed.data.map(item => item.city)
+      data = avSpeed.data.map(item => item.avg_download_speed_mbps)
+      updateCountries = [...internalSelectedCountries];
+      updateCountries[id].cityDataDownload = await arrayMapper('Download Speed per city', city, data)
+      updateCountries[id].cityDataReadyDownload = true;
+      setInternalCountries(updateCountries);
+
+      //UPLOAD SPEED OVER TIME
+      city = [];
+      city = avSpeed.data.map(item => item.city)
+      data = avSpeed.data.map(item => item.avg_upload_speed_mbps)
+      updateCountries = [...internalSelectedCountries];
+      updateCountries[id].cityDataUpload = await arrayMapper('Upload Speed per city', city, data)
+      updateCountries[id].cityDataReadyUpload = true;
+      setInternalCountries(updateCountries);
+
+      //PACKET LOSS OVER TIME
+      city = [];
+      city = avPacketLoss.data.map(item => item.city)
+      data = avPacketLoss.data.map(item => item.packet_loss)
+      updateCountries = [...internalSelectedCountries];
+      updateCountries[id].cityDataPacketLoss = await arrayMapper('Upload Speed per city', city, data)
+      updateCountries[id].cityDataReadyPacketLoss = true;
+      setInternalCountries(updateCountries);
+
+      console.log(internalSelectedCountries)
+
     }
   }
 
@@ -524,8 +577,7 @@ function PageMLAB() {
           <Accordion.Item eventKey="0">
             <Accordion.Header><h2>Time Series Data (Yearly)</h2></Accordion.Header>
             <Accordion.Body>
-              <div className="map-container" >
-              </div>
+
               {internalSelectedCountries[0] != null && internalSelectedCountries[0].latencyOverTimeYearReady === true && (
                 <>
                   <div class="row">
@@ -633,33 +685,36 @@ function PageMLAB() {
                       Select a year
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      <Dropdown.Item eventKey="tsd2020">2020</Dropdown.Item>
-                      <Dropdown.Item eventKey="tsd2021">2021</Dropdown.Item>
-                      <Dropdown.Item eventKey="tsd2022">2022</Dropdown.Item>
-                      <Dropdown.Item eventKey="tsd2023">2023</Dropdown.Item>
-                      <Dropdown.Item eventKey="tsd2024">2024</Dropdown.Item>
+                      <Dropdown.Item eventKey="hm2020">2020</Dropdown.Item>
+                      <Dropdown.Item eventKey="hm2021">2021</Dropdown.Item>
+                      <Dropdown.Item eventKey="hm2022">2022</Dropdown.Item>
+                      <Dropdown.Item eventKey="hm2023">2023</Dropdown.Item>
+                      <Dropdown.Item eventKey="hm2024">2024</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                   <div class="row">
 
 
                     {internalSelectedCountries.map(internalSelectedCountries => (
-                      <div class="col" key={internalSelectedCountries.id}>
+                      <div class="col-heatmaps" key={internalSelectedCountries.id}>
                         <h2>Download Speed</h2>
                         {internalSelectedCountries.heatmapSpeedReady === true && (
                           <>
                             <p>{internalSelectedCountries.name}</p>
-
+                            <div className="map-data-container">
                             <div class='map-container' id={internalSelectedCountries.code + 'down'}><HeatMap dataset={internalSelectedCountries.heatmapSpeed} containerID={internalSelectedCountries.code + 'down'} /></div>
+                            </div>
                           </>
 
                         )}
                         <h2>Upload Speed</h2>
                         {internalSelectedCountries.heatmapSpeedUpReady === true && (
                           <>
+                            
                             <p>{internalSelectedCountries.name}</p>
-
+                            <div className="map-data-container">
                             <div class='map-container' id={internalSelectedCountries.code + 'up'}><HeatMap dataset={internalSelectedCountries.heatmapSpeedUp} containerID={internalSelectedCountries.code + 'up'} /></div>
+                            </div>
                           </>
 
                         )}
@@ -667,8 +722,9 @@ function PageMLAB() {
                         {internalSelectedCountries.heatmapLatencyReady === true && (
                           <>
                             <p>{internalSelectedCountries.name}</p>
-
+                            <div className="map-data-container">
                             <div class='map-container' id={internalSelectedCountries.code + 'latency'}><HeatMap dataset={internalSelectedCountries.heatmapLatency} containerID={internalSelectedCountries.code + 'latency'} /></div>
+                            </div>
                           </>
 
                         )}
@@ -676,8 +732,75 @@ function PageMLAB() {
                         {internalSelectedCountries.heatMapPacketLossReady === true && (
                           <>
                             <p>{internalSelectedCountries.name}</p>
+                            <div className="map-data-container">
+                            <div class='map-container' id={internalSelectedCountries.code + 'loss'}><HeatMap dataset={internalSelectedCountries.heatmapPacketLoss} containerID={internalSelectedCountries.code + 'loss'} /></div>
+                            </div>
+                          </>
 
-                            <div class='map-container' id={internalSelectedCountries.code + 'loss'}><HeatMap dataset={internalSelectedCountries.heatMapPacketLoss} containerID={internalSelectedCountries.code + 'loss'} /></div>
+                        )}
+
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="4">
+            <Accordion.Header><h2>City Data</h2></Accordion.Header>
+            <Accordion.Body>
+              {internalSelectedCountries[0] != null && internalSelectedCountries[0].latencyOverTimeYearReady === true && (
+                <>
+                  <Dropdown onSelect={handleSelect}>
+                    <Dropdown.Toggle variant="primary" id={internalSelectedCountries.id}>
+                      Select a year
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item eventKey="cd2020">2020</Dropdown.Item>
+                      <Dropdown.Item eventKey="cd2021">2021</Dropdown.Item>
+                      <Dropdown.Item eventKey="cd2022">2022</Dropdown.Item>
+                      <Dropdown.Item eventKey="cd2023">2023</Dropdown.Item>
+                      <Dropdown.Item eventKey="cd2024">2024</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                  <div class="row">
+
+
+                    {internalSelectedCountries.map(internalSelectedCountries => (
+                      <div class="col" key={internalSelectedCountries.id}>
+                        <h2>Latency per Month</h2>
+                        {internalSelectedCountries.cityDataReadyLatency === true && (
+                          <>
+                            <p>{internalSelectedCountries.name}</p>
+
+                            <div class='graph'><BarChart chartData={internalSelectedCountries.cityDataLatency} /></div>
+                          </>
+
+                        )}
+                        <h2>Download Speed per Month</h2>
+                        {internalSelectedCountries.cityDataReadyDownload === true && (
+                          <>
+                            <p>{internalSelectedCountries.name}</p>
+
+                            <div class='graph'><BarChart chartData={internalSelectedCountries.cityDataDownload} /></div>
+                          </>
+
+                        )}
+                        <h2>Upload Speed per Month</h2>
+                        {internalSelectedCountries.cityDataReadyUpload === true && (
+                          <>
+                            <p>{internalSelectedCountries.name}</p>
+
+                            <div class='graph'><BarChart chartData={internalSelectedCountries.cityDataUpload} /></div>
+                          </>
+
+                        )}
+                        <h2>Packet Loss per Month</h2>
+                        {internalSelectedCountries.cityDataReadyPacketLoss === true && (
+                          <>
+                            <p>{internalSelectedCountries.name}</p>
+
+                            <div class='graph'><BarChart chartData={internalSelectedCountries.cityDataPacketLoss} /></div>
                           </>
 
                         )}

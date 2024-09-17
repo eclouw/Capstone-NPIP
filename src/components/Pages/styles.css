@@ -8,6 +8,7 @@
     width:100%;
     margin-right: 20px;
     
+    
 }
 
 
@@ -34,6 +35,13 @@ body{
 
 
 .col{
+    display: inline-block;
+    align-items: center;
+    padding: 20px;
+
+}
+
+.col-heatmaps{
     display: inline-block;
     align-items: center;
     padding: 20px;
@@ -71,6 +79,7 @@ body{
   .accordion-body{
     background-color: #13315C !important;
     color: white;
+    overflow: scroll;
   }
 
 
