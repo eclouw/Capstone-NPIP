@@ -167,7 +167,8 @@ function PageMLAB (){
                 download: 0, packet_loss: 0, latency: 0, upload: 0, latencyOverTimeYear: [], latencyOverTimeYearReady: false,
               packetLossOverTimeYear: [], packetLossOverTimeYearReady: false, numberOfTestsOverTimeYear: [], numberOfTestsOverTimeYearReady: false,
               uploadSpeedOverTimeYear: [], uploadSpeedOverTimeYearReady: false, downloadSpeedOverTimeYear: [], downloadSpeedOverTimeYearReady: false,
-            };
+              latencyOverTimeMonth: [], latencyOverTimeMonthReady: false, downloadSpeedOverTimeMonth: [], downloadSpeedOverTimeMonthReady: false, uploadSpeedOverTimeMonth: [],
+              uploadSpeedOverTimeMonthReady: false};
               setCount((prevCount) => prevCount + 1);
               internalCount = internalCount +1;
               map.current.setFeatureState(
@@ -226,9 +227,9 @@ function PageMLAB (){
     
     if (id != -1){
       if (month == null){
-        const avDownload = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_combined_speed_mbps&table_type=download&group_by=time_month');
-        const avLatency = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_latency_ms&table_type=download&group_by=time_month');
-        const avPacketLoss = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_packet_loss&table_type=download&group_by=time_month');
+        const avDownload = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_combined_speed_mbps&table_type=download&group_by=time_year');
+        const avLatency = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_latency_ms&table_type=download&group_by=time_year');
+        const avPacketLoss = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_packet_loss&table_type=download&group_by=time_year');
 
         const updateCountries = [...internalSelectedCountries];
         updateCountries[id].download = avDownload.data[0].avg_download_speed_mbps;
@@ -303,64 +304,7 @@ function PageMLAB (){
       
     }
 
-    //FETCH TIME SERIES DATA MONTH
-  const ftchTimeSeriesDataMonth = async(countryCode, year) =>{
-    var id = fetchId(internalSelectedCountries, countryCode);
-    if(id != -1){
-      internalSelectedCountries[id].latencyOverTimeYearReady = false;
-      internalSelectedCountries[id].downloadSpeedOverTimeYearReady = false;
-      internalSelectedCountries[id].uploadSpeedOverTimeYearReady = false;
-      internalSelectedCountries[id].packetLossOverTimeYearReady = false;
-      const avSpeed = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_combined_speed_mbps&table_type=download&group_by=time_year');
-      const avLatency= await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_latency_ms&table_type=download&group_by=time_year');
-      const avPacketLoss= await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_packet_loss&table_type=download&group_by=time_year');
-      console.log(avSpeed.data);
-      
-      console.log(avPacketLoss.data);
-
-      avLatency.data.sort((a,b)=>a.year-b.year);
-      avSpeed.data.sort((a,b)=>a.year-b.year);
-      avPacketLoss.data.sort((a,b)=>a.year-b.year);
-
-      //LATENCY OVER TIME
-      let years = avLatency.data.map(item => item.year)
-      let data = avLatency.data.map(item => item.avg_combined_latency_ms)
-      let updateCountries = [...internalSelectedCountries];
-      updateCountries[id].latencyOverTimeYear= await arrayMapper('Latency over time',years, data)
-      updateCountries[id].latencyOverTimeYearReady = true;
-      setInternalCountries(updateCountries);
-      
-      //DOWNLOAD SPEED OVER TIME
-      years=[];
-      years = avSpeed.data.map(item=>item.year)
-      data = avSpeed.data.map(item => item.avg_download_speed_mbps)
-      updateCountries = [...internalSelectedCountries];
-      updateCountries[id].downloadSpeedOverTimeYear= await arrayMapper('Download Speed over time',years, data)
-      updateCountries[id].downloadSpeedOverTimeYearReady = true;
-      setInternalCountries(updateCountries);
-
-      //UPLOAD SPEED OVER TIME
-      years=[];
-      years = avSpeed.data.map(item=>item.year)
-      data = avSpeed.data.map(item => item.avg_upload_speed_mbps)
-      updateCountries = [...internalSelectedCountries];
-      updateCountries[id].uploadSpeedOverTimeYear= await arrayMapper('Upload Speed over time',years, data)
-      updateCountries[id].uploadSpeedOverTimeYearReady = true;
-      setInternalCountries(updateCountries);
-
-      //PACKET LOSS OVER TIME
-      years=[];
-      years = avPacketLoss.data.map(item=>item.year)
-      data = avPacketLoss.data.map(item => item.packet_loss)
-      updateCountries = [...internalSelectedCountries];
-      updateCountries[id].packetLossOverTimeYear= await arrayMapper('Upload Speed over time',years, data)
-      updateCountries[id].packetLossOverTimeYearReady = true;
-      setInternalCountries(updateCountries);
-
-
-      
-    }
-  }
+    
 
     
 
@@ -369,6 +313,67 @@ function PageMLAB (){
   
 
   
+}
+
+//FETCH TIME SERIES DATA MONTH
+const ftchTimeSeriesDataMonth = async(countryCode, year) =>{
+  var id = fetchId(internalSelectedCountries, countryCode);
+  if(id != -1){
+    internalSelectedCountries[id].latencyOverTimeMonthReady = false;
+    internalSelectedCountries[id].downloadSpeedOverMonthReady = false;
+    internalSelectedCountries[id].uploadSpeedOverTimeMonthReady = false;
+    internalSelectedCountries[id].packetLossOverTimeMonthReady = false;
+    const avSpeed = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_combined_speed_mbps&table_type=download&group_by=time_year_month');
+    const avLatency= await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_latency_ms&table_type=download&group_by=time_year_month');
+    const avPacketLoss= await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_packet_loss&table_type=download&group_by=time_year_month');
+    console.log(avSpeed.data);
+    console.log(avLatency.data);
+    console.log(avPacketLoss.data);
+
+    avLatency.data.sort((a,b)=>a.month-b.month);
+    avSpeed.data.sort((a,b)=>a.month-b.month);
+    avPacketLoss.data.sort((a,b)=>a.month-b.month);
+
+    //LATENCY OVER TIME
+    let months = avLatency.data.map(item => item.month)
+    let data = avLatency.data.map(item => item.avg_combined_latency_ms)
+    let updateCountries = [...internalSelectedCountries];
+    updateCountries[id].latencyOverTimeMonth= await arrayMapper('Latency over time',months, data)
+    updateCountries[id].latencyOverTimeMonthReady = true;
+    setInternalCountries(updateCountries);
+    
+    //DOWNLOAD SPEED OVER TIME
+    months=[];
+    months = avSpeed.data.map(item=>item.months)
+    data = avSpeed.data.map(item => item.avg_download_speed_mbps)
+    updateCountries = [...internalSelectedCountries];
+    updateCountries[id].downloadSpeedOverTimeMonth= await arrayMapper('Download Speed over time',months, data)
+    updateCountries[id].downloadSpeedOverTimeMonthReady = true;
+    setInternalCountries(updateCountries);
+
+    //UPLOAD SPEED OVER TIME
+    months=[];
+    months = avSpeed.data.map(item=>item.months)
+    data = avSpeed.data.map(item => item.avg_upload_speed_mbps)
+    updateCountries = [...internalSelectedCountries];
+    updateCountries[id].uploadSpeedOverTimeMonth= await arrayMapper('Upload Speed over time',months, data)
+    updateCountries[id].uploadSpeedOverTimeMonthReady = true;
+    setInternalCountries(updateCountries);
+
+    //PACKET LOSS OVER TIME
+    months=[];
+    months = avPacketLoss.data.map(item=>item.months)
+    data = avPacketLoss.data.map(item => item.packet_loss)
+    updateCountries = [...internalSelectedCountries];
+    updateCountries[id].packetLossOverTimeMonth= await arrayMapper('Upload Speed over time',months, data)
+    updateCountries[id].packetLossOverTimeMonthReady = true;
+    setInternalCountries(updateCountries);
+
+    console.log(internalSelectedCountries)
+
+
+    
+  }
 }
 
 //MAP AN ARRAY TO THE CORRECT FORMAT FOR GRAPHS
@@ -391,6 +396,10 @@ const arrayMapper=async(labelText, labelData,dataSetData)=>{
 
 const handleSelect = (eventKey) =>{
   console.log(eventKey)
+  if (eventKey == "tsd2020"){
+    ftchTimeSeriesDataMonth(internalSelectedCountries[0].code, 2021)
+  }
+  
 }
 
   
@@ -462,44 +471,44 @@ const handleSelect = (eventKey) =>{
         <Accordion.Item eventKey="0">
           <Accordion.Header><h2>Time Series Data (Yearly)</h2></Accordion.Header>
           <Accordion.Body>
-        {internalSelectedCountries[0] != null && internalSelectedCountries[0].latencyOverTimeYearReady === true &&(
-          <>
-            <div class = "row">
-            {internalSelectedCountries.map(internalSelectedCountries => (
-            <div class = "col" key={internalSelectedCountries.id}>
-              <h2>Latency over time</h2>
-              {internalSelectedCountries.latencyOverTimeYearReady === true &&(
-                <>
-                  <p>{internalSelectedCountries.name}</p>
+            {internalSelectedCountries[0] != null && internalSelectedCountries[0].latencyOverTimeYearReady === true &&(
+              <>
+                <div class = "row">
+                {internalSelectedCountries.map(internalSelectedCountries => (
+                <div class = "col" key={internalSelectedCountries.id}>
+                  <h2>Latency over time</h2>
+                  {internalSelectedCountries.latencyOverTimeYearReady === true &&(
+                    <>
+                      <p>{internalSelectedCountries.name}</p>
+                      
+                      <div class='graph'><LineChart chartData={internalSelectedCountries.latencyOverTimeYear}/></div>
+                    </>
+                    
+                  )}
+                  <h2>Download Speed over time</h2>
+                  {internalSelectedCountries.downloadSpeedOverTimeYearReady === true &&(
+                    <>
+                      <p>{internalSelectedCountries.name}</p>
+                      
+                      <div class='graph'><LineChart chartData={internalSelectedCountries.downloadSpeedOverTimeYear}/></div>
+                    </>
+                    
+                  )}
+                  <h2>Upload Speed over time</h2>
+                  {internalSelectedCountries.uploadSpeedOverTimeYearReady === true &&(
+                    <>
+                      <p>{internalSelectedCountries.name}</p>
+                      
+                      <div class='graph'><LineChart chartData={internalSelectedCountries.uploadSpeedOverTimeYear}/></div>
+                    </>
+                    
+                  )}
                   
-                  <div class='graph'><LineChart chartData={internalSelectedCountries.latencyOverTimeYear}/></div>
-                </>
-                
-              )}
-              <h2>Download Speed over time</h2>
-              {internalSelectedCountries.downloadSpeedOverTimeYearReady === true &&(
-                <>
-                  <p>{internalSelectedCountries.name}</p>
-                  
-                  <div class='graph'><LineChart chartData={internalSelectedCountries.downloadSpeedOverTimeYear}/></div>
-                </>
-                
-              )}
-              <h2>Upload Speed over time</h2>
-              {internalSelectedCountries.uploadSpeedOverTimeYearReady === true &&(
-                <>
-                  <p>{internalSelectedCountries.name}</p>
-                  
-                  <div class='graph'><LineChart chartData={internalSelectedCountries.uploadSpeedOverTimeYear}/></div>
-                </>
-                
-              )}
-              
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-          </>
-        )}
+              </>
+            )}
         </Accordion.Body>
       </Accordion.Item>
         <Accordion.Item eventKey="1">
@@ -507,34 +516,56 @@ const handleSelect = (eventKey) =>{
             <Accordion.Body>
               {internalSelectedCountries[0] != null && internalSelectedCountries[0].latencyOverTimeYearReady === true &&(
                 <>
-                  <div class = "row">
-                              <Dropdown onSelect={handleSelect()}>
-                                <Dropdown.Toggle variant="primary" id={internalSelectedCountries.id}>
-                                  Select a year
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                  <Dropdown.Item eventKey="tsd2020">2020</Dropdown.Item>
-                                  <Dropdown.Item eventKey="tsd2021">2021</Dropdown.Item> 
-                                  <Dropdown.Item eventKey="tsd2022">2022</Dropdown.Item>
-                                  <Dropdown.Item eventKey="tsd2023">2023</Dropdown.Item>
-                                  <Dropdown.Item eventKey="tsd2024">2024</Dropdown.Item>
-                                </Dropdown.Menu>
-                              </Dropdown>
-                            
-                    {internalSelectedCountries.map(internalSelectedCountries => (
-                      <>
-                        <div class = "col" key={internalSelectedCountries.id}>
-                          {internalSelectedCountries.latencyOverTimeYearReady === true &&(
-                            <>
-                            </>
+                  <Dropdown onSelect={handleSelect}>
+                                  <Dropdown.Toggle variant="primary" id={internalSelectedCountries.id}>
+                                    Select a year
+                                  </Dropdown.Toggle>
+                                  <Dropdown.Menu>
+                                    <Dropdown.Item eventKey="tsd2020">2020</Dropdown.Item>
+                                    <Dropdown.Item eventKey="tsd2021">2021</Dropdown.Item> 
+                                    <Dropdown.Item eventKey="tsd2022">2022</Dropdown.Item>
+                                    <Dropdown.Item eventKey="tsd2023">2023</Dropdown.Item>
+                                    <Dropdown.Item eventKey="tsd2024">2024</Dropdown.Item>
+                                  </Dropdown.Menu>
+                                </Dropdown>
+                    <div class = "row">
                               
-                          )}
-                        </div>
-                      </>
-                    ))}
-                  </div>
-                </>
-              )}
+                            
+                              {internalSelectedCountries.map(internalSelectedCountries => (
+                              <div class = "col" key={internalSelectedCountries.id}>
+                                <h2>Latency over time</h2>
+                                {internalSelectedCountries.latencyOverTimeMonthReady === true &&(
+                                  <>
+                                    <p>{internalSelectedCountries.name}</p>
+                                    
+                                    <div class='graph'><LineChart chartData={internalSelectedCountries.latencyOverTimeMonth}/></div>
+                                  </>
+                                  
+                                )}
+                                <h2>Download Speed over time</h2>
+                                {internalSelectedCountries.downloadSpeedOverTimeMonthReady === true &&(
+                                  <>
+                                    <p>{internalSelectedCountries.name}</p>
+                                    
+                                    <div class='graph'><LineChart chartData={internalSelectedCountries.downloadSpeedOverTimeMonth}/></div>
+                                  </>
+                                  
+                                )}
+                                <h2>Upload Speed over time</h2>
+                                {internalSelectedCountries.uploadSpeedOverTimeMonthReady === true &&(
+                                  <>
+                                    <p>{internalSelectedCountries.name}</p>
+                                    
+                                    <div class='graph'><LineChart chartData={internalSelectedCountries.uploadSpeedOverTimeMonth}/></div>
+                                  </>
+                                  
+                                )}
+                                
+                              </div>
+                              ))}
+                                </div>
+                              </>
+                            )}
             </Accordion.Body>
         </Accordion.Item>
       </Accordion>
