@@ -170,7 +170,7 @@ function PageMLAB (){
               packetLossOverTimeYear: [], packetLossOverTimeYearReady: false, numberOfTestsOverTimeYear: [], numberOfTestsOverTimeYearReady: false,
               uploadSpeedOverTimeYear: [], uploadSpeedOverTimeYearReady: false, downloadSpeedOverTimeYear: [], downloadSpeedOverTimeYearReady: false,
               latencyOverTimeMonth: [], latencyOverTimeMonthReady: false, downloadSpeedOverTimeMonth: [], downloadSpeedOverTimeMonthReady: false, uploadSpeedOverTimeMonth: [],
-              uploadSpeedOverTimeMonthReady: false, heatmapSpeed: [], heatmapSpeedReady: false};
+              uploadSpeedOverTimeMonthReady: false, heatmapSpeed: [{key: '',longitude:0.0,latitude:0.0}], heatmapSpeedReady: false};
               setCount((prevCount) => prevCount + 1);
               internalCount = internalCount +1;
               map.current.setFeatureState(
@@ -396,8 +396,11 @@ const generateHeatMaps = async(countryCode, year) =>{
     //LATENCY HEATMAP DATA
     let updateCountries = [...internalSelectedCountries];
     for (let i = 0; i< avSpeed.data.length; i++){
-      updateCountries.heatmapSpeed[i] = {key: avSpeed.data[i].avg_download_speed_mbps, lng: avSpeed.data[i].longitude, lat: avSpeed.data[i].latitude};
+      updateCountries[id].heatmapSpeed[i] = {key: i, value: avSpeed.data[i].avg_download_speed_mbps, lng: avSpeed.data[i].longitude, lat: avSpeed.data[i].latitude, code: internalSelectedCountries[id].code};
     }
+    updateCountries[id].heatmapSpeedReady = true;
+    setInternalCountries(updateCountries);
+
     console.log('update countries')
     console.log(updateCountries)
     console.log(avSpeed.length)
@@ -423,6 +426,16 @@ const arrayMapper=async(labelText, labelData,dataSetData)=>{
   console.log('mapped array')
   return data;
 
+}
+
+const arrayKeyAssign=async(oldKey, newKey, dataSetData)=>{
+  const newArray= dataSetData.map(item =>{
+    const {oldKey, ...rest} = item;
+
+    return{
+      newKey: oldKey, ...rest
+    }
+  })
 }
 
 const handleSelect = (eventKey) =>{
@@ -573,6 +586,63 @@ const handleSelect = (eventKey) =>{
                                     <p>{internalSelectedCountries.name}</p>
                                     
                                     <div class='graph'><LineChart chartData={internalSelectedCountries.latencyOverTimeMonth}/></div>
+                                  </>
+                                  
+                                )}
+                                <h2>Download Speed over time</h2>
+                                {internalSelectedCountries.downloadSpeedOverTimeMonthReady === true &&(
+                                  <>
+                                    <p>{internalSelectedCountries.name}</p>
+                                    
+                                    <div class='graph'><LineChart chartData={internalSelectedCountries.downloadSpeedOverTimeMonth}/></div>
+                                  </>
+                                  
+                                )}
+                                <h2>Upload Speed over time</h2>
+                                {internalSelectedCountries.uploadSpeedOverTimeMonthReady === true &&(
+                                  <>
+                                    <p>{internalSelectedCountries.name}</p>
+                                    
+                                    <div class='graph'><LineChart chartData={internalSelectedCountries.uploadSpeedOverTimeMonth}/></div>
+                                  </>
+                                  
+                                )}
+                                
+                              </div>
+                              ))}
+                                </div>
+                              </>
+                            )}
+            </Accordion.Body>
+        </Accordion.Item>
+        <Accordion.Item eventKey="3">
+          <Accordion.Header><h2>Heat Maps</h2></Accordion.Header>
+            <Accordion.Body>
+              {internalSelectedCountries[0] != null && internalSelectedCountries[0].heatmapSpeed[0].key !== null &&(
+                <>
+                  <Dropdown onSelect={handleSelect}>
+                                  <Dropdown.Toggle variant="primary" id={internalSelectedCountries.id}>
+                                    Select a year
+                                  </Dropdown.Toggle>
+                                  <Dropdown.Menu>
+                                    <Dropdown.Item eventKey="tsd2020">2020</Dropdown.Item>
+                                    <Dropdown.Item eventKey="tsd2021">2021</Dropdown.Item> 
+                                    <Dropdown.Item eventKey="tsd2022">2022</Dropdown.Item>
+                                    <Dropdown.Item eventKey="tsd2023">2023</Dropdown.Item>
+                                    <Dropdown.Item eventKey="tsd2024">2024</Dropdown.Item>
+                                  </Dropdown.Menu>
+                                </Dropdown>
+                    <div class = "row">
+                              
+                            
+                              {internalSelectedCountries.map(internalSelectedCountries => (
+                              <div class = "col" key={internalSelectedCountries.id}>
+                                <h2>Download Speed</h2>
+                                {internalSelectedCountries.heatmapSpeedReady === true &&(
+                                  <>
+                                    <p>{internalSelectedCountries.name}</p>
+                                    
+                                    <div class='map-container' id={internalSelectedCountries.code}><HeatMap dataset={internalSelectedCountries.heatmapSpeed} containerID={internalSelectedCountries.code}/></div>
                                   </>
                                   
                                 )}
