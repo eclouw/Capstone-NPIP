@@ -7,8 +7,10 @@ import GetMLABData from "../GetMLABData";
 import BarChart from "../BarChart";
 import LineChart from "../LineChart";
 import { Accordion, Dropdown } from "react-bootstrap";
+import HeatMap from "../HeatMap";
 
 function PageMLAB (){
+
   //MLAB API KEY
   mapboxgl.accessToken = 'pk.eyJ1IjoiZWxvdXciLCJhIjoiY20xMG5zYXN0MDdhcTJycjVoYXg3Y2VrbCJ9.m9NoEyiaJx-A2AXDHIR6Ew';
 
@@ -168,7 +170,7 @@ function PageMLAB (){
               packetLossOverTimeYear: [], packetLossOverTimeYearReady: false, numberOfTestsOverTimeYear: [], numberOfTestsOverTimeYearReady: false,
               uploadSpeedOverTimeYear: [], uploadSpeedOverTimeYearReady: false, downloadSpeedOverTimeYear: [], downloadSpeedOverTimeYearReady: false,
               latencyOverTimeMonth: [], latencyOverTimeMonthReady: false, downloadSpeedOverTimeMonth: [], downloadSpeedOverTimeMonthReady: false, uploadSpeedOverTimeMonth: [],
-              uploadSpeedOverTimeMonthReady: false};
+              uploadSpeedOverTimeMonthReady: false, heatmapSpeed: [], heatmapSpeedReady: false};
               setCount((prevCount) => prevCount + 1);
               internalCount = internalCount +1;
               map.current.setFeatureState(
@@ -178,6 +180,8 @@ function PageMLAB (){
               )
               countrySelected(internalSelectedCountries[internalCount-1].code);
               ftchTimeSeriesDataYear(internalSelectedCountries[internalCount-1].code);
+              generateHeatMaps(internalSelectedCountries[internalCount-1].code, '2024')
+
             }
             
             
@@ -376,6 +380,33 @@ const ftchTimeSeriesDataMonth = async(countryCode, year) =>{
   }
 }
 
+//GENERATE HEATMAP DATA
+const generateHeatMaps = async(countryCode, year) =>{
+  var id = fetchId(internalSelectedCountries, countryCode);
+  if(id != -1){
+    internalSelectedCountries[id].heatmapSpeedReady = false;
+    const avSpeed = await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_combined_speed_mbps&table_type=download&group_by=location');
+    const avLatency= await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_latency_ms&table_type=download&group_by=location');
+    const avPacketLoss= await fetchData('https://api-mlab-compute-86452853723.us-central1.run.app/?country='+countryCode+'&year='+year+'&metric=avg_packet_loss&table_type=download&group_by=location');
+    console.log('heat map data')
+    console.log(avSpeed.data);
+    console.log(avLatency.data);
+    console.log(avPacketLoss.data);
+
+    //LATENCY HEATMAP DATA
+    let updateCountries = [...internalSelectedCountries];
+    for (let i = 0; i< avSpeed.data.length; i++){
+      updateCountries.heatmapSpeed[i] = {key: avSpeed.data[i].avg_download_speed_mbps, lng: avSpeed.data[i].longitude, lat: avSpeed.data[i].latitude};
+    }
+    console.log('update countries')
+    console.log(updateCountries)
+    console.log(avSpeed.length)
+
+
+    
+  }
+}
+
 //MAP AN ARRAY TO THE CORRECT FORMAT FOR GRAPHS
 const arrayMapper=async(labelText, labelData,dataSetData)=>{
   const data={
@@ -411,6 +442,7 @@ const handleSelect = (eventKey) =>{
 
     <div className="PageMLAB">
       <h1>MLAB COUNTRY DATA</h1>
+      
       <div class="row">
         <div class="col">
           <div className="map-data-container">
@@ -471,6 +503,8 @@ const handleSelect = (eventKey) =>{
         <Accordion.Item eventKey="0">
           <Accordion.Header><h2>Time Series Data (Yearly)</h2></Accordion.Header>
           <Accordion.Body>
+          <div className="map-container" >
+          </div>
             {internalSelectedCountries[0] != null && internalSelectedCountries[0].latencyOverTimeYearReady === true &&(
               <>
                 <div class = "row">
