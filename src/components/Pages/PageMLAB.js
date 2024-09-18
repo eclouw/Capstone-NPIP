@@ -8,6 +8,7 @@ import BarChart from "../BarChart";
 import LineChart from "../LineChart";
 import { Accordion, Dropdown } from "react-bootstrap";
 import HeatMap from "../HeatMap";
+import getMLABDATA from "../Hooks/getMLABDATA";
 
 function PageMLAB() {
   //MLAB API KEY
@@ -249,6 +250,7 @@ function PageMLAB() {
                 internalSelectedCountries[internalCount - 1].code,
                 "2024",
               );
+              countryData();
             }
           }
         }
@@ -593,10 +595,7 @@ function PageMLAB() {
   const ftchMetricsInnerCountry = async (countryCode, year) => {
     var id = fetchId(internalSelectedCountries, countryCode);
     if (id != -1) {
-      internalSelectedCountries[id].cityDataReadyDownload = false;
-      internalSelectedCountries[id].cityDataReadyLatency = false;
-      internalSelectedCountries[id].cityDataReadyPacketLoss = false;
-      internalSelectedCountries[id].cityDataReadyUpload = false;
+      
       const avSpeed = await fetchData(
         "https://api-mlab-compute-86452853723.us-central1.run.app/?country=" +
           countryCode +
@@ -781,6 +780,16 @@ function PageMLAB() {
     };
     console.log("mapped array");
     return data;
+  };
+
+  const countryData = async(countryCode, year, group, metric) => {
+    countryCode = 'ZA';
+    year='2024';
+    group= 'region';
+    metric='avg_latency_ms';
+    const cData = await getMLABDATA(countryCode, year, group, metric);
+    console.log('country datata')
+    console.log(cData.data);
   };
 
 
@@ -1021,135 +1030,6 @@ function PageMLAB() {
                                       internalSelectedCountries.uploadSpeedOverTimeMonth
                                     }
                                   />
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  </>
-                )}
-            </Accordion.Body>
-          </Accordion.Item>
-          <Accordion.Item eventKey="3">
-            <Accordion.Header>
-              <h2>Heat Maps</h2>
-            </Accordion.Header>
-            <Accordion.Body>
-              {internalSelectedCountries[0] != null &&
-                internalSelectedCountries[0].heatmapSpeed[0].key !== null && (
-                  <>
-                    <Dropdown onSelect={handleSelect}>
-                      <Dropdown.Toggle
-                        variant="primary"
-                        id={internalSelectedCountries.id}
-                      >
-                        Select a year
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item eventKey="hmd2020">2020</Dropdown.Item>
-                        <Dropdown.Item eventKey="hmd2021">2021</Dropdown.Item>
-                        <Dropdown.Item eventKey="hmd2022">2022</Dropdown.Item>
-                        <Dropdown.Item eventKey="hmd2023">2023</Dropdown.Item>
-                        <Dropdown.Item eventKey="hmd2024">2024</Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                    <div class="row">
-                      {internalSelectedCountries.map(
-                        (internalSelectedCountries) => (
-                          <div
-                            class="col-heatmaps"
-                            key={internalSelectedCountries.id}
-                          >
-                            <h2>Download Speed</h2>
-                            {internalSelectedCountries.heatmapSpeedReady ===
-                              true && (
-                              <>
-                                <p>{internalSelectedCountries.name}</p>
-                                <div className="map-data-container">
-                                  <div
-                                    class="map-container"
-                                    id={internalSelectedCountries.code + "down"}
-                                  >
-                                    <HeatMap
-                                      dataset={
-                                        internalSelectedCountries.heatmapSpeed
-                                      }
-                                      containerID={
-                                        internalSelectedCountries.code + "down"
-                                      }
-                                    />
-                                  </div>
-                                </div>
-                              </>
-                            )}
-                            <h2>Upload Speed</h2>
-                            {internalSelectedCountries.heatmapSpeedUpReady ===
-                              true && (
-                              <>
-                                <p>{internalSelectedCountries.name}</p>
-                                <div className="map-data-container">
-                                  <div
-                                    class="map-container"
-                                    id={internalSelectedCountries.code + "up"}
-                                  >
-                                    <HeatMap
-                                      dataset={
-                                        internalSelectedCountries.heatmapSpeedUp
-                                      }
-                                      containerID={
-                                        internalSelectedCountries.code + "up"
-                                      }
-                                    />
-                                  </div>
-                                </div>
-                              </>
-                            )}
-                            <h2>Latency</h2>
-                            {internalSelectedCountries.heatmapLatencyReady ===
-                              true && (
-                              <>
-                                <p>{internalSelectedCountries.name}</p>
-                                <div className="map-data-container">
-                                  <div
-                                    class="map-container"
-                                    id={
-                                      internalSelectedCountries.code + "latency"
-                                    }
-                                  >
-                                    <HeatMap
-                                      dataset={
-                                        internalSelectedCountries.heatmapLatency
-                                      }
-                                      containerID={
-                                        internalSelectedCountries.code +
-                                        "latency"
-                                      }
-                                    />
-                                  </div>
-                                </div>
-                              </>
-                            )}
-                            <h2>Packet Loss</h2>
-                            {internalSelectedCountries.heatMapPacketLossReady ===
-                              true && (
-                              <>
-                                <p>{internalSelectedCountries.name}</p>
-                                <div className="map-data-container">
-                                  <div
-                                    class="map-container"
-                                    id={internalSelectedCountries.code + "loss"}
-                                  >
-                                    <HeatMap
-                                      dataset={
-                                        internalSelectedCountries.heatmapPacketLoss
-                                      }
-                                      containerID={
-                                        internalSelectedCountries.code + "loss"
-                                      }
-                                    />
-                                  </div>
                                 </div>
                               </>
                             )}
