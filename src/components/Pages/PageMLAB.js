@@ -6,6 +6,7 @@ import axios from "axios";
 import BarChart from "../BarChart";
 import LineChart from "../LineChart";
 import { Accordion, Dropdown } from "react-bootstrap";
+import generateGraphDataMLAB from "../Hooks/generateGraphDataMLAB";
 
 
 function PageMLAB() {

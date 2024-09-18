@@ -1,9 +1,7 @@
 import NavBar from "../NavBar";
 import PageMLAB from "./PageMLAB";
-import PageGoogleMaps from "./PageGoogleMaps";
 import PageHome from "./PageHome";
 import { Route, Routes } from "react-router-dom";
-import App from "../../App";
 import PageRipeAtlas from "./PageRipeAtlas.js";
 import './styles.css'
 import MLABPage from "./MLABPage.js";
@@ -17,7 +15,6 @@ function PageRoutes(){
         <div className="container">
             <Routes>
                 <Route path="/" element={<PageHome/>} />
-                <Route path="/PageGoogleMaps" element={<PageGoogleMaps/>} />
                 <Route path="/PageRipeAtlas" element={<PageRipeAtlas/>} />
                 <Route path="/PageMLAB" element={<MLABPage/>}/>
             </Routes>

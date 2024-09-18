@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect } from "react";
 
-const getMLABDATA=(country, year, group, table)=>{
+const getMLABDATA= async(country, year, group, table)=>{
     
     console.log('called function to get Data')
     console.log(country)
@@ -24,6 +24,7 @@ const getMLABDATA=(country, year, group, table)=>{
 
     const fetchData=async(command)=>{
         console.log('fetching data')
+        console.log(command);
         const dataResponse = await axios.get(command);
         
         return dataResponse.data;
@@ -31,7 +32,7 @@ const getMLABDATA=(country, year, group, table)=>{
     
     
     console.log('re')
-    return data();
+    return await data();
 
 }
 export default getMLABDATA;

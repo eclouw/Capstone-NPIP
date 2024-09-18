@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'bootstrap/dist/css/bootstrap.css';
-import App from './App';
 import PageHome from './components/Pages/PageHome';
 import reportWebVitals from './reportWebVitals';
 import PageRoutes from './components/Pages/PageRoutes';
