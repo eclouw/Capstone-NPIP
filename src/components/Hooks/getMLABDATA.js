@@ -1,22 +1,37 @@
 import axios from "axios";
+import { useEffect } from "react";
 
-export default function getMLABDATA(country, year, group, metric){
+const getMLABDATA=(country, year, group, table)=>{
+    
+    console.log('called function to get Data')
+    console.log(country)
     const data = async()=>{
-        const response = await fetchData(
-            "https://api-mlab-compute-86452853723.us-central1.run.app/?country=" +
-              country +
-              "&year=" +
-              year +
-              "&metric="+metric+"&group_by="+group,
-          );
-          return response;
+        if (country != "all"){
+            const response = await fetchData("https://mlab-13prsouz.uc.gateway.dev/"+table+
+                "?country="+country+"&year="+year+"&group_by="+group);
+            return response;
+            
+        }else{
+            const response = await fetchData("https://mlab-13prsouz.uc.gateway.dev/compute/"+
+                "?year="+year+"&group_by="+group);
+        console.log('data response');
+        console.log(response.data);
+        return response;
+        }
+        
+          
     }
 
     const fetchData=async(command)=>{
-        const dataResponse = await axios.post(command);
+        console.log('fetching data')
+        const dataResponse = await axios.get(command);
+        
         return dataResponse.data;
     };
-
-    return data;
+    
+    
+    console.log('re')
+    return data();
 
 }
+export default getMLABDATA;

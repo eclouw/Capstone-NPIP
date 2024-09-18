@@ -3,12 +3,10 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./styles.css";
 import axios from "axios";
-import GetMLABData from "../GetMLABData";
 import BarChart from "../BarChart";
 import LineChart from "../LineChart";
 import { Accordion, Dropdown } from "react-bootstrap";
-import HeatMap from "../HeatMap";
-import getMLABDATA from "../Hooks/getMLABDATA";
+
 
 function PageMLAB() {
   //MLAB API KEY
@@ -787,9 +785,9 @@ function PageMLAB() {
     year='2024';
     group= 'region';
     metric='avg_latency_ms';
-    const cData = await getMLABDATA(countryCode, year, group, metric);
+   // const cData = await getMLABDATA(countryCode, year, group, metric);
     console.log('country datata')
-    console.log(cData.data);
+    //console.log(cData.data);
   };
 
 

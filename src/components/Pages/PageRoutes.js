@@ -6,6 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import App from "../../App";
 import PageRipeAtlas from "./PageRipeAtlas.js";
 import './styles.css'
+import MLABPage from "./MLABPage.js";
 
 //Manages all the routing between pages
 //The route to app below is just for testing things
@@ -18,7 +19,7 @@ function PageRoutes(){
                 <Route path="/" element={<PageHome/>} />
                 <Route path="/PageGoogleMaps" element={<PageGoogleMaps/>} />
                 <Route path="/PageRipeAtlas" element={<PageRipeAtlas/>} />
-                <Route path="/PageMLAB" element={<PageMLAB/>}/>
+                <Route path="/PageMLAB" element={<MLABPage/>}/>
             </Routes>
         </div>
         </>
