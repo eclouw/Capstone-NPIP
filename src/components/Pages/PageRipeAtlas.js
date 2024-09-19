@@ -8,10 +8,11 @@ import { Icon } from "leaflet";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Card, Button, ListGroup, CloseButton, Dropdown } from "react-bootstrap";
+import { Card, Button, ListGroup, CloseButton, Dropdown, Tab, Tabs } from "react-bootstrap";
 import getRIPEDATA from "../Hooks/getRIPEDATA";
 import dataMeasurements from "../../dataStorage/measurements";
-import SidebarMenu, { SidebarMenuBody } from "react-bootstrap-sidebar-menu";
+import generateProbeRequest from "../Hooks/generateProbeRequest";
+import getRIPEDATADIRECT from "../Hooks/getRIPEDATADIRECT";
 
 
 function PageRipeAtlas() {
@@ -20,10 +21,11 @@ function PageRipeAtlas() {
     const [probeMapData, setProbeMapData] = useState([]);
     const [probeMapDataReady, setProbeMapDataReady] = useState([false])
     const [selectedProbes, setSelectedProbes] = useState([]);
-    const [measurement, setMeasurement] = useState();
-    const [year, setYear] = useState();
-    const [month, setMonth] = useState();
+    const [year, setYear] = useState('2024');
+    const [yearYear, setYearYear] = useState('2024')
     const [group, setGroup] = useState();
+    const [metricYear, setMetricYear] = useState('RTT Average')
+    const [measurementYear, setMeasurementYear] = useState('a.root-servers.net');
     const [dataMeasuresTextReady, setDataMeasuresTextReady] = useState(false);
 
     useEffect(() => {
@@ -44,24 +46,39 @@ function PageRipeAtlas() {
     }, [])
 
     const addSelectedProbe = (id) => {
-        const index = selectedProbes.findIndex(item => item.id === id);
-        if (index !== -1) {
-            console.log('Already selected')
-        } else {
-            let data = ([]);
-            data.push({ id: id });
-            setSelectedProbes((currentSelectedProbes) => ([...currentSelectedProbes, ...data]));
+        if (selectedProbes.length < 4){
+                const index = selectedProbes.findIndex(item => item.id === id);
+            if (index !== -1) {
+                console.log('Already selected')
+            } else {
+                let data = ([]);
+                data.push({ id: id });
+                setSelectedProbes((currentSelectedProbes) => ([...currentSelectedProbes, ...data]));
+                
         }
+        }
+        
 
 
     }
 
-    const setYearValue = (year) => {
-        setYear(year)
+    const setYearValue = (year, key) => {
+        if (key==='year'){
+            setYearYear(year);
+        }
     }
 
-    const setMeasurementValue = (measurement) => {
-        setMeasurement(measurement);
+    const setMetricValue = (metric, key)=>{
+        if (key==='year'){
+            setMetricYear(metric);
+        }
+    }
+
+    const setMeasurementValue = (measurement, key) => {
+        if (key==='year'){
+            setMeasurementYear(measurement);
+        }
+        
     }
 
     const setMonthValue = (month) => {
@@ -77,6 +94,15 @@ function PageRipeAtlas() {
         if (index !== -1) {
             const data = [...selectedProbes.slice(0, index), ...selectedProbes.slice(index + 1)];
             setSelectedProbes(data);
+        }
+    }
+
+    const getCommand=(key)=>{
+        if (key === 'year'){
+            console.log(selectedProbes);
+            let request = generateProbeRequest([[{key: 'year', value: yearYear}],[{key: 'group', value: 'month'}]], parseInt(selectedProbes[0].id));
+            getRIPEDATADIRECT(request);
+
         }
     }
 
@@ -113,7 +139,7 @@ function PageRipeAtlas() {
     })
     return (
         <>
-            <div>
+            <div className="Ripe" data-bs-theme="dark">
                 <Container>
                     <Row>
                         <Col xs={25} style={{ marginTop: '20px' }}>
@@ -219,17 +245,18 @@ function PageRipeAtlas() {
 
                         </Col>
                     </Row>
-                    <Row>
-                        <Button onClick={() => { generateGraph() }}>FEARLESS SPEAK NOW RED 1989 REPUTATION LOVER EVERMORE FOLKLORE MIDNIGHTS</Button>
-                    </Row>
+                    
                     <Row>
 
 
                     </Row>
                 </Container>
-                <Card style={{ maxWidth: '100%' }}>
+
+                <Tabs defaultActiveKey="yearly" id="tabRIPE" className='mb-3'>
+                    <Tab eventKey="yearly" title="Data for specific year">
+                    <Card style={{ maxWidth: '100%' }}>
                     <Card.Body>
-                        <h3>Selected Measurement: </h3>
+                        <h3>Selected Measurement: {measurementYear}</h3>
                         {measurementTargets.length > 0 && dataMeasuresTextReady && (
                             <Dropdown>
                                 <Dropdown.Toggle>
@@ -237,7 +264,7 @@ function PageRipeAtlas() {
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     {measurementTargets.map((data) => (
-                                        <Dropdown.Item as="button" key={data.target} onClick={() => setMeasurementValue(data.target)}>
+                                        <Dropdown.Item as="button" key={data.target} onClick={() => setMeasurementValue(data.target, 'year')}>
                                             {data.target}
                                         </Dropdown.Item>
 
@@ -246,9 +273,56 @@ function PageRipeAtlas() {
                             </Dropdown>
                         )}
 
+                        <h3>Selected Year: {yearYear}</h3>
+                            <Dropdown>
+                                <Dropdown.Toggle>
+                                    Select a Year
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
 
+                                    <Dropdown.Item as="button" key='2020Year' onClick={() => setYearValue('2020', 'year')}>2021</Dropdown.Item>
+                                    <Dropdown.Item as="button" key='2021Year' onClick={() => setYearValue('2021', 'year')}>2020</Dropdown.Item>
+                                    <Dropdown.Item as="button" key='2022Year' onClick={() => setYearValue('2022', 'year')}>2022</Dropdown.Item>
+                                    <Dropdown.Item as="button" key='2023Year' onClick={() => setYearValue('2023', 'year')}>2023</Dropdown.Item>
+                                    <Dropdown.Item as="button" key='2024Year' onClick={() => setYearValue('2024', 'year')}>2024</Dropdown.Item>
+
+                                
+                                </Dropdown.Menu>
+                            </Dropdown>
+
+                            <h3>Metric: {metricYear}</h3>
+                            <Dropdown>
+                                <Dropdown.Toggle>
+                                    Select a Metric
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+
+                                    <Dropdown.Item as="button" key='rttMinYear' onClick={() => setMetricValue('RTT Min','year')}>RTT Min</Dropdown.Item>
+                                    <Dropdown.Item as="button" key='rttMaxYear' onClick={() => setMetricValue('RTT Max','year')}>RTT Max</Dropdown.Item>
+                                    <Dropdown.Item as="button" key='rttAverageYear' onClick={() => setMetricValue('RTT Average','year')}>RTT Average</Dropdown.Item>
+                             
+
+                                
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        
+
+                            {selectedProbes.length > 0 ?(
+                            <Button variant="primary" size="lg" style={{marginTop:'20px'}} onClick={()=>getCommand('year')}>
+                            Generate Graphs
+                            </Button>
+                        ):(
+                            <Button variant="primary" size="lg" disabled style={{marginTop:'20px'}}>
+                                Please select at least one probe
+                            </Button>
+                        )}
                     </Card.Body>
                 </Card>
+                        
+                    </Tab>
+
+                </Tabs>
+                
             </div>
             
 

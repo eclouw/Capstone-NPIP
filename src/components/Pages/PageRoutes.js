@@ -11,7 +11,7 @@ import MLABPage from "./MLABPage.js";
 function PageRoutes(){
     return (
         <>
-        <NavBar/>
+        <NavBar data-bs-theme="dark"/>
         <div className="container">
             <Routes>
                 <Route path="/" element={<PageHome/>} />

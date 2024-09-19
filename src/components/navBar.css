@@ -1,7 +1,7 @@
 
 .navbar{
     width: 100%; /* Take up 100 percent screen width */
-    background: #134074; 
+    background: #1e1e1e; 
     display: flex; /* use flex layout */
     align-items: center; /* Align items to center of the navbar */
     padding: 20px; /* Add padding to the navbar */

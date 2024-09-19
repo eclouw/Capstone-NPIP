@@ -26,8 +26,9 @@ const getRIPEDATA = async(id, table, measurement, group, year, month) =>{
             
         }
     }
-
-    return fetchData();
+    
+    const data = await fetchData();
+    return data();
 }
 //https://ripe-13prsouz.uc.gateway.dev/measurements/?probe_id=1000237&measurement_id=1009&year=2023&month=1
 //https://ripe-13prsouz.uc.gateway.dev/compute/?group_by=probe_id&probe_id=1000237
