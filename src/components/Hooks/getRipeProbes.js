@@ -1,0 +1,32 @@
+import axios from "axios";
+
+const getRipeProbes = async()=>{
+
+    const FetchProbesFromServer = async()=>{
+        const response = await axios.get('https://ripe-13prsouz.uc.gateway.dev/probes');
+        console.log(response);
+        return mapProbes(response.data);
+    }
+
+    const mapProbes= async(probeData)=>{
+        const mappedProbes = ([]);
+        for (let i=0; i < probeData.data.length; i++){
+            if (probeData.data[i].lat != null && probeData.data[i].lng != null){
+                mappedProbes.push({lat: probeData.data[i].lat, lng: probeData.data[i].lng,
+                    id: probeData.data[i].id, status: probeData.data[i].status_id, countryCode: probeData.data[i].country_code,
+                     supports_v4: probeData.data[i].supports_v4, supports_v6: probeData.data[i].supports_v6,
+                    system_type: probeData.data[i].system_type
+                })
+            }
+            
+            
+        }
+        return mappedProbes;
+    }
+
+
+    return await FetchProbesFromServer();
+    
+}
+
+export default getRipeProbes;

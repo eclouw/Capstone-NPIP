@@ -6,6 +6,7 @@ import { Dropdown, Button, Card, Spinner, Tab, Tabs } from 'react-bootstrap';
 import BarChart from '../BarChart';
 import { Chart, registerables } from 'chart.js';
 import generateGraphDataMLAB from '../Hooks/generateGraphDataMLAB';
+import LineChart from '../LineChart';
 <link ref="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet"></link>
 Chart.register(...registerables);
 
@@ -13,6 +14,7 @@ function MLABPage() {
     const [countryList, setCountryList] = useState(['Please Select a Country']);
     const [country, setCountry] = useState([{ name: null, index: 0 }, { name: null, index: 1 }])
     const [graphData, setGraphData] = useState([])
+    const [betweenGraphData, setBetweenGraphData] = useState([])
     const [year, setYear] = useState('2024');
     const [group, setGroup] = useState('city');
     const [metric, setMetric] = useState('avg_download_speed_mbps');
@@ -21,13 +23,17 @@ function MLABPage() {
     const [graphDataReady, setGraphDataReady] = useState(false)
     const [graphsChanged, setGraphsChanged] = useState(false)
     const [metricTextMap, setMetricTextMap] = useState('Average Download Speed (mbps)');
-    const [groupTextMap, setGroupTextMap] = useState('City');
     const [graphCountries, setGraphCountries] = useState([[],[]]);
+    const [betweenMetric, setMetricBetween] = useState('avg_download_speed_mbps');
+    const [betweenYear, setBetweenYear]= useState('2024')
+    const [metricBetweenTextMap, setMetricBetweenTextMap]= useState('Average Download Speed (mbps)')
+    const [betweenGraphDataReady, setBetweenGraphDataReady] = useState(false)
+    const [betweenGraphDataFormatted, setBetweenGraphDataFormatted] = useState([]);
 
     useEffect(() => {
 
         getCountryList();
-    }, [country, year, metric, group, readyForParam, graphsChanged, graphData])
+    }, [country, year, metric, group, readyForParam, graphsChanged, graphData, betweenGraphData])
 
     //FUNCTION FOR WHEN THE USER SELECTS A COUNTRY FROM THE DROPDOWN
     const handleCountrySelect = (sCountry, index) => {
@@ -41,29 +47,56 @@ function MLABPage() {
     }
 
     //FUNCTION FOR WHEN THE USER SELECTS A YEAR FROM THE DROPDOWN
-    const handleYearSelect = (year) => {
-        setYear(year);
+    const handleYearSelect = (year, between) => {
+        if (between){
+            setBetweenYear(year);
+        }else{
+            setYear(year);
+        }
+        
     }
 
-    const handleMetricSelect = (metric) => {
-        switch(metric){
-            case 'avg_upload_speed_mbps':
-                setMetricTextMap('Average Upload Speed (mbps)');
-                break;
-            case 'avg_download_speed_mbps':
-                setMetricTextMap('Average Download Speed (mbps)');
-                break;
-            case 'avg_download_latency_ms':
-                setMetricTextMap('Average Download Latency (ms)');
-                break;
-            case 'avg_packet_loss':
-                setMetricTextMap('Average Packet Loss');
-                break;
-            case 'avg_upload_latency_ms':
-                setMetricTextMap('Average Upload Latency (ms)');
-                break;
+    const handleMetricSelect = (metric, between) => {
+        if (between){
+            switch(metric){
+                case 'avg_upload_speed_mbps':
+                    setMetricBetweenTextMap('Average Upload Speed (mbps)');
+                    break;
+                case 'avg_download_speed_mbps':
+                    setMetricBetweenTextMap('Average Download Speed (mbps)');
+                    break;
+                case 'avg_download_latency_ms':
+                    setMetricBetweenTextMap('Average Download Latency (ms)');
+                    break;
+                case 'avg_packet_loss':
+                    setMetricBetweenTextMap('Average Packet Loss');
+                    break;
+                case 'avg_upload_latency_ms':
+                    setMetricBetweenTextMap('Average Upload Latency (ms)');
+                    break;
+            }
+            setMetricBetween(metric);
+        }else{
+            switch(metric){
+                case 'avg_upload_speed_mbps':
+                    setMetricTextMap('Average Upload Speed (mbps)');
+                    break;
+                case 'avg_download_speed_mbps':
+                    setMetricTextMap('Average Download Speed (mbps)');
+                    break;
+                case 'avg_download_latency_ms':
+                    setMetricTextMap('Average Download Latency (ms)');
+                    break;
+                case 'avg_packet_loss':
+                    setMetricTextMap('Average Packet Loss');
+                    break;
+                case 'avg_upload_latency_ms':
+                    setMetricTextMap('Average Upload Latency (ms)');
+                    break;
+            }
+            setMetric(metric);
         }
-        setMetric(metric);
+        
     }
 
     const handleGroupSelect = (group) => {
@@ -85,20 +118,39 @@ function MLABPage() {
 
     //LOAD A LIST OF COUNTRIES THAT HAVE DATA
     const getCountryList = async () => {
-        const cList = await getMLABDATA('all', '2024', 'country', 'compute')
+        const cList = await getMLABDATA('all', '2024', 'country', 'compute', false)
         setCountryList(cList.data);
         setCountryListLoad(true);
 
     }
 
-    const generateGraphs = async () => {
-        let data = [];
-        setGraphData([]);
-        if (await fetchGraphData()) {
+
+
+    const generateGraphs = async (between) => {
+        if (between){
+            console.log('between is true')
+            setBetweenGraphData([]);
+            if (await fetchGraphData(true)){
+                setBetweenGraphDataReady(false);
+                const data = await generateGraphDataMLAB(betweenGraphData, betweenMetric, null, true);
+                console.log(data);
+                console.log('above');
+                setBetweenGraphData(data)
+                setBetweenGraphDataFormatted(data)
+                setBetweenGraphDataReady(true)
+            }
+            console.log(betweenGraphData)
+            
+        }else{
+            console.log('between is false')
+            let data = [];
             setGraphDataReady(false);
+            setGraphData([]);
+        if (await fetchGraphData(false)) {
+            
             console.log('time for mapping')
-            data = await generateGraphDataMLAB(graphData, metric, group);
-            setGraphData(data);
+            const data = await generateGraphDataMLAB(graphData, metric, group,false);
+            await setGraphData(data);
             console.log('Graph data')
             console.log(graphData)
             setGraphDataReady(true);
@@ -107,18 +159,28 @@ function MLABPage() {
             console.log(graphData.length)
             console.log(graphData)
         }
+        }
+        
 
 
     }
 
-    const fetchGraphData = async () => {
+    const fetchGraphData = async(between) => {
+        
         const data = [];
         console.log('country array length')
         console.log(country.length)
         for (let i = 0; i < country.length; i++) {
             console.log(country[i].name);
-            const response = await fetchData(country[i].name, year, group);
-            graphData[i] = [response.data]
+            if (between){
+                const response = await fetchData(country[i].name, betweenYear, 'country');
+                betweenGraphData[i] = [response.data]
+            }else{
+                const response = await fetchData(country[i].name, year, group);
+                graphData[i] = [response.data]
+            }
+            
+            
 
         }
 
@@ -128,7 +190,7 @@ function MLABPage() {
     }
 
     const fetchData = async (country, year, grouping) => {
-        const response = await getMLABDATA(country, year, grouping, 'compute');
+        const response = await getMLABDATA(country, year, grouping, 'compute', false);
         console.log('response from hook')
         console.log(response)
         return response;
@@ -176,7 +238,7 @@ function MLABPage() {
                             className='mb-3'>
                             <Tab eventKey="innerCompare" title="Compare data within countries">
 
-                                {readyForParam && (
+                                {readyForParam ? (
                                     <>
                                         <h2>Selected year: {year}</h2>
                                         <Dropdown>
@@ -184,11 +246,11 @@ function MLABPage() {
                                                 Select a year
                                             </Dropdown.Toggle>
                                             <Dropdown.Menu>
-                                                <Dropdown.Item as="button" key='2020' onClick={() => handleYearSelect('2020')}>2020</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2021' onClick={() => handleYearSelect('2021')}>2021</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2022' onClick={() => handleYearSelect('2022')}>2022</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2023' onClick={() => handleYearSelect('2023')}>2023</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2024' onClick={() => handleYearSelect('2024')}>2024</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='2020' onClick={() => handleYearSelect('2020',false)}>2020</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='2021' onClick={() => handleYearSelect('2021',false)}>2021</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='2022' onClick={() => handleYearSelect('2022',false)}>2022</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='2023' onClick={() => handleYearSelect('2023',false)}>2023</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='2024' onClick={() => handleYearSelect('2024',false)}>2024</Dropdown.Item>
                                             </Dropdown.Menu>
                                         </Dropdown>
 
@@ -198,11 +260,11 @@ function MLABPage() {
                                                 Select a metric
                                             </Dropdown.Toggle>
                                             <Dropdown.Menu>
-                                                <Dropdown.Item as="button" key='avg_download_latency_ms' onClick={() => handleMetricSelect('avg_download_latency_ms')}>Average Download Latency ms</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_download_speed_mbps' onClick={() => handleMetricSelect('avg_download_speed_mbps')}>Average Download Speed mbps</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_packet_loss' onClick={() => handleMetricSelect('avg_packet_loss')}>Average Packet Loss</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_upload_latency_ms' onClick={() => handleMetricSelect('avg_upload_latency_ms')}>Average Upload Latency ms</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_upload_speed_mbps' onClick={() => handleMetricSelect('avg_upload_speed_mbps')}>Average Upload Speed mbps</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='avg_download_latency_ms' onClick={() => handleMetricSelect('avg_download_latency_ms',false)}>Average Download Latency ms</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='avg_download_speed_mbps' onClick={() => handleMetricSelect('avg_download_speed_mbps',false)}>Average Download Speed mbps</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='avg_packet_loss' onClick={() => handleMetricSelect('avg_packet_loss',false)}>Average Packet Loss</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='avg_upload_latency_ms' onClick={() => handleMetricSelect('avg_upload_latency_ms',false)}>Average Upload Latency ms</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='avg_upload_speed_mbps' onClick={() => handleMetricSelect('avg_upload_speed_mbps',false)}>Average Upload Speed mbps</Dropdown.Item>
                                             </Dropdown.Menu>
                                         </Dropdown>
 
@@ -220,13 +282,22 @@ function MLABPage() {
                                             </Dropdown.Menu>
                                         </Dropdown>
 
-                                        <Button onClick={() => generateGraphs()}>Generate graphs</Button>
+                                        <Button onClick={() => generateGraphs(false)}>Generate graphs</Button>
 
-                                        {graphDataReady && graphData.length > 0 ? (
+                                        {graphDataReady && graphData.length ===2 ? (
                                     <div>
-                                        {graphData.map((currentGraph, index) => (
-
-                                            <p><BarChart chartData={currentGraph} /></p>
+                                        {graphData?.map((currentGraph) => (
+                                             <Tabs defaultActiveKey="barGraphInner"
+                                             id="chartTypeInner"
+                                             className='mb-3'>
+                                                <Tab eventKey="barGraphInner" title="Bar Graph">
+                                                    <p><BarChart chartData={currentGraph} /></p>
+                                                </Tab>
+                                                <Tab eventKey="lineGraphInner" title="Line Graph">
+                                                    <p><LineChart chartData={currentGraph} /></p>
+                                                </Tab>
+                                            
+                                            </Tabs>
 
                                         ))}
                                     </div>
@@ -234,12 +305,53 @@ function MLABPage() {
                                     <p><i>Please click generate to generate a graph, if you have already clicked generate, please wait a few seconds</i></p>
                                 )}
                                     </>
+                                ):(
+                                    <p><i>Please Select Your countries</i></p>
                                 )}
                                
 
                             </Tab>
                             <Tab eventKey="betweenCompare" title="Compare data between countries">
-
+                                {readyForParam ?(
+                                    <>
+                                        <h2>Selected year: {betweenYear}</h2>
+                                        <Dropdown>
+                                            <Dropdown.Toggle>
+                                                Select a year
+                                            </Dropdown.Toggle>
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item as="button" key='2021B' onClick={() => handleYearSelect('2021', true)}>2021</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='2022B' onClick={() => handleYearSelect('2022', true)}>2022</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='2020B' onClick={() => handleYearSelect('2020', true)}>2020</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='2023B' onClick={() => handleYearSelect('2023', true)}>2023</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='2024B' onClick={() => handleYearSelect('2024', true)}>2024</Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                        <h2>Selected metric: {metricBetweenTextMap}</h2>
+                                        <Dropdown>
+                                            <Dropdown.Toggle>
+                                                Select a metric
+                                            </Dropdown.Toggle>
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item as="button" key='avg_download_latency_msB' onClick={() => handleMetricSelect('avg_download_latency_ms',true)}>Average Download Latency ms</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='avg_download_speed_mbpsB' onClick={() => handleMetricSelect('avg_download_speed_mbps',true)}>Average Download Speed mbps</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='avg_packet_lossB' onClick={() => handleMetricSelect('avg_packet_loss',true)}>Average Packet Loss</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='avg_upload_latency_msB' onClick={() => handleMetricSelect('avg_upload_latency_ms',true)}>Average Upload Latency ms</Dropdown.Item>
+                                                <Dropdown.Item as="button" key='avg_upload_speed_mbpsB' onClick={() => handleMetricSelect('avg_upload_speed_mbps',true)}>Average Upload Speed mbps</Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                        <Button onClick={() => generateGraphs(true)}>Generate graphs</Button>
+                                       {betweenGraphDataReady ?(
+                                        <BarChart chartData={betweenGraphData}/>
+                                       ):(
+                                        <p><i>Please click generate to generate a graph, if you have already clicked generate, please wait a few seconds</i></p>
+                                       )}
+                                    </>
+                                    
+                                    
+                                ):(
+                                    <p><i>Please Select Your countries</i></p>
+                                )}
                             </Tab>
                         </Tabs>
 
