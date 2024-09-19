@@ -1,12 +1,7 @@
 import axios from "axios";
-
 const getRipeProbes = async()=>{
 
-    const FetchProbesFromServer = async()=>{
-        const response = await axios.get('https://ripe-13prsouz.uc.gateway.dev/probes');
-        console.log(response);
-        return mapProbes(response.data);
-    }
+    
 
     const mapProbes= async(probeData)=>{
         const mappedProbes = ([]);
@@ -21,11 +16,20 @@ const getRipeProbes = async()=>{
             
             
         }
+
+        
         return mappedProbes;
     }
 
+        const loadProbes =async()=>{
+        const response = await axios.get('https://ripe-13prsouz.uc.gateway.dev/probes');
+        console.log(response);
+        return mapProbes(response.data);
+    
+        }
 
-    return await FetchProbesFromServer();
+
+    return await loadProbes();
     
 }
 
