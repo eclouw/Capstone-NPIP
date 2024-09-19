@@ -199,7 +199,7 @@ function MLABPage() {
 
 
     return (
-        <div class='MLABPage'>
+        <div class='MLABPage' >
             <Card>
                 <Card.Body>This page can get MLAB data for specific queries to either compare data within two contries or to compare the data between two countries</Card.Body>
             </Card>

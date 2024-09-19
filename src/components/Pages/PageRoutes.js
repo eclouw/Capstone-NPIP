@@ -15,6 +15,7 @@ function PageRoutes(){
         <div className="container">
             <Routes>
                 <Route path="/" element={<PageHome/>} />
+
                 <Route path="/PageRipeAtlas" element={<PageRipeAtlas/>} />
                 <Route path="/PageMLAB" element={<MLABPage/>}/>
             </Routes>
