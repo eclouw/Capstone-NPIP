@@ -29,6 +29,8 @@ function MLABPage() {
     const [metricBetweenTextMap, setMetricBetweenTextMap]= useState('Average Download Speed (mbps)')
     const [betweenGraphDataReady, setBetweenGraphDataReady] = useState(false)
     const [betweenGraphDataFormatted, setBetweenGraphDataFormatted] = useState([]);
+    const [dataLoading, setDataLoading] = useState(false);
+    const [compareDataLoading, setCompareDataLoading] = useState(false);
 
     useEffect(() => {
 
@@ -127,6 +129,8 @@ function MLABPage() {
 
 
     const generateGraphs = async (between) => {
+        setDataLoading(true);
+        setCompareDataLoading(true);
         if (between){
             console.log('between is true')
             setBetweenGraphData([]);
@@ -138,6 +142,7 @@ function MLABPage() {
                 setBetweenGraphData(data)
                 setBetweenGraphDataFormatted(data)
                 setBetweenGraphDataReady(true)
+                setCompareDataLoading(false);
             }
             console.log(betweenGraphData)
             
@@ -158,6 +163,7 @@ function MLABPage() {
             console.log('graphdata length')
             console.log(graphData.length)
             console.log(graphData)
+            setDataLoading(false);
         }
         }
         
@@ -233,135 +239,130 @@ function MLABPage() {
 
             </div>
 
-            <Tabs defaultActiveKey="innerCompare"
-                            id="tabMLAB"
-                            className='mb-3'>
-                            <Tab eventKey="innerCompare" title="Compare data within countries">
+            <Tabs defaultActiveKey="innerCompare" id="tabMLAB" className='mb-3'>
+    <Tab eventKey="innerCompare" title="Compare data within countries">
+        {readyForParam && (
+            <>
+                <h2>Selected year: {year}</h2>
+                <Dropdown>
+                    <Dropdown.Toggle>
+                        Select a year
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item as="button" key='2020' onClick={() => handleYearSelect('2020', false)}>2020</Dropdown.Item>
+                        <Dropdown.Item as="button" key='2021' onClick={() => handleYearSelect('2021', false)}>2021</Dropdown.Item>
+                        <Dropdown.Item as="button" key='2022' onClick={() => handleYearSelect('2022', false)}>2022</Dropdown.Item>
+                        <Dropdown.Item as="button" key='2023' onClick={() => handleYearSelect('2023', false)}>2023</Dropdown.Item>
+                        <Dropdown.Item as="button" key='2024' onClick={() => handleYearSelect('2024', false)}>2024</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
 
-                                {readyForParam ? (
-                                    <>
-                                        <h2>Selected year: {year}</h2>
-                                        <Dropdown>
-                                            <Dropdown.Toggle>
-                                                Select a year
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item as="button" key='2020' onClick={() => handleYearSelect('2020',false)}>2020</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2021' onClick={() => handleYearSelect('2021',false)}>2021</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2022' onClick={() => handleYearSelect('2022',false)}>2022</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2023' onClick={() => handleYearSelect('2023',false)}>2023</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2024' onClick={() => handleYearSelect('2024',false)}>2024</Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
+                <h2>Selected metric: {metricTextMap}</h2>
+                <Dropdown>
+                    <Dropdown.Toggle>
+                        Select a metric
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item as="button" key='avg_download_latency_ms' onClick={() => handleMetricSelect('avg_download_latency_ms', false)}>Average Download Latency ms</Dropdown.Item>
+                        <Dropdown.Item as="button" key='avg_download_speed_mbps' onClick={() => handleMetricSelect('avg_download_speed_mbps', false)}>Average Download Speed mbps</Dropdown.Item>
+                        <Dropdown.Item as="button" key='avg_packet_loss' onClick={() => handleMetricSelect('avg_packet_loss', false)}>Average Packet Loss</Dropdown.Item>
+                        <Dropdown.Item as="button" key='avg_upload_latency_ms' onClick={() => handleMetricSelect('avg_upload_latency_ms', false)}>Average Upload Latency ms</Dropdown.Item>
+                        <Dropdown.Item as="button" key='avg_upload_speed_mbps' onClick={() => handleMetricSelect('avg_upload_speed_mbps', false)}>Average Upload Speed mbps</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
 
-                                        <h2>Selected metric: {metricTextMap}</h2>
-                                        <Dropdown>
-                                            <Dropdown.Toggle>
-                                                Select a metric
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item as="button" key='avg_download_latency_ms' onClick={() => handleMetricSelect('avg_download_latency_ms',false)}>Average Download Latency ms</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_download_speed_mbps' onClick={() => handleMetricSelect('avg_download_speed_mbps',false)}>Average Download Speed mbps</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_packet_loss' onClick={() => handleMetricSelect('avg_packet_loss',false)}>Average Packet Loss</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_upload_latency_ms' onClick={() => handleMetricSelect('avg_upload_latency_ms',false)}>Average Upload Latency ms</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_upload_speed_mbps' onClick={() => handleMetricSelect('avg_upload_speed_mbps',false)}>Average Upload Speed mbps</Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
+                <h2>Selected a grouping: {group}</h2>
+                <Dropdown>
+                    <Dropdown.Toggle>
+                        Select a grouping
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item as="button" key='month' onClick={() => handleGroupSelect('month')}>Month</Dropdown.Item>
+                        <Dropdown.Item as="button" key='region' onClick={() => handleGroupSelect('region')}>Region</Dropdown.Item>
+                        <Dropdown.Item as="button" key='city' onClick={() => handleGroupSelect('city')}>City</Dropdown.Item>
+                        <Dropdown.Item as="button" key='as_name' onClick={() => handleGroupSelect('as_name')}>AS Name</Dropdown.Item>
+                        <Dropdown.Item as="button" key='as_number' onClick={() => handleGroupSelect('as_number')}>AS Number</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
 
-                                        <h2>Selected a grouping: {group}</h2>
-                                        <Dropdown>
-                                            <Dropdown.Toggle>
-                                                Select a grouping
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item as="button" key='month' onClick={() => handleGroupSelect('month')}>Month</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='region' onClick={() => handleGroupSelect('region')}>Region</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='city' onClick={() => handleGroupSelect('city')}>City</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='as_name' onClick={() => handleGroupSelect('as_name')}>AS Name</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='as_number' onClick={() => handleGroupSelect('as_number')}>AS Number</Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
+                <Button onClick={() => generateGraphs(false)}>Generate graphs</Button>
 
-                                        <Button onClick={() => generateGraphs(false)}>Generate graphs</Button>
+                {graphDataReady && graphData.length === 2 && (
+                    <div>
+                        {graphData?.map((currentGraph) => (
+                            <Tabs defaultActiveKey="barGraphInner" id="chartTypeInner" className='mb-3'>
+                                <Tab eventKey="barGraphInner" title="Bar Graph">
+                                    <p><BarChart chartData={currentGraph} /></p>
+                                </Tab>
+                                <Tab eventKey="lineGraphInner" title="Line Graph">
+                                    <p><LineChart chartData={currentGraph} /></p>
+                                </Tab>
+                            </Tabs>
+                        ))}
+                    </div>
+                )}
+                {!graphDataReady && !dataLoading && (
+                    <p><i>Please click generate to generate a graph, if you have already clicked generate, please wait a few seconds</i></p>
+                )}
+                {dataLoading && (
+                    <Spinner />
+                )}
+            </>
+        )}
+    </Tab>
+    <Tab eventKey="betweenCompare" title="Compare data between countries">
+        {readyForParam ? (
+            <>
+                <h2>Selected year: {betweenYear}</h2>
+                <Dropdown>
+                    <Dropdown.Toggle>
+                        Select a year
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item as="button" key='2021B' onClick={() => handleYearSelect('2021', true)}>2021</Dropdown.Item>
+                        <Dropdown.Item as="button" key='2022B' onClick={() => handleYearSelect('2022', true)}>2022</Dropdown.Item>
+                        <Dropdown.Item as="button" key='2020B' onClick={() => handleYearSelect('2020', true)}>2020</Dropdown.Item>
+                        <Dropdown.Item as="button" key='2023B' onClick={() => handleYearSelect('2023', true)}>2023</Dropdown.Item>
+                        <Dropdown.Item as="button" key='2024B' onClick={() => handleYearSelect('2024', true)}>2024</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
 
-                                        {graphDataReady && graphData.length ===2 ? (
-                                    <div>
-                                        {graphData?.map((currentGraph) => (
-                                             <Tabs defaultActiveKey="barGraphInner"
-                                             id="chartTypeInner"
-                                             className='mb-3'>
-                                                <Tab eventKey="barGraphInner" title="Bar Graph">
-                                                    <p><BarChart chartData={currentGraph} /></p>
-                                                </Tab>
-                                                <Tab eventKey="lineGraphInner" title="Line Graph">
-                                                    <p><LineChart chartData={currentGraph} /></p>
-                                                </Tab>
-                                            
-                                            </Tabs>
+                <h2>Selected metric: {metricBetweenTextMap}</h2>
+                <Dropdown>
+                    <Dropdown.Toggle>
+                        Select a metric
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item as="button" key='avg_download_latency_msB' onClick={() => handleMetricSelect('avg_download_latency_ms', true)}>Average Download Latency ms</Dropdown.Item>
+                        <Dropdown.Item as="button" key='avg_download_speed_mbpsB' onClick={() => handleMetricSelect('avg_download_speed_mbps', true)}>Average Download Speed mbps</Dropdown.Item>
+                        <Dropdown.Item as="button" key='avg_packet_lossB' onClick={() => handleMetricSelect('avg_packet_loss', true)}>Average Packet Loss</Dropdown.Item>
+                        <Dropdown.Item as="button" key='avg_upload_latency_msB' onClick={() => handleMetricSelect('avg_upload_latency_ms', true)}>Average Upload Latency ms</Dropdown.Item>
+                        <Dropdown.Item as="button" key='avg_upload_speed_mbpsB' onClick={() => handleMetricSelect('avg_upload_speed_mbps', true)}>Average Upload Speed mbps</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
 
-                                        ))}
-                                    </div>
-                                ):(
-                                    <p><i>Please click generate to generate a graph, if you have already clicked generate, please wait a few seconds</i></p>
-                                )}
-                                    </>
-                                ):(
-                                    <p><i>Please Select Your countries</i></p>
-                                )}
-                               
+                <Button onClick={() => generateGraphs(true)}>Generate graphs</Button>
 
-                            </Tab>
-                            <Tab eventKey="betweenCompare" title="Compare data between countries">
-                                {readyForParam ?(
-                                    <>
-                                        <h2>Selected year: {betweenYear}</h2>
-                                        <Dropdown>
-                                            <Dropdown.Toggle>
-                                                Select a year
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item as="button" key='2021B' onClick={() => handleYearSelect('2021', true)}>2021</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2022B' onClick={() => handleYearSelect('2022', true)}>2022</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2020B' onClick={() => handleYearSelect('2020', true)}>2020</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2023B' onClick={() => handleYearSelect('2023', true)}>2023</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='2024B' onClick={() => handleYearSelect('2024', true)}>2024</Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                        <h2>Selected metric: {metricBetweenTextMap}</h2>
-                                        <Dropdown>
-                                            <Dropdown.Toggle>
-                                                Select a metric
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item as="button" key='avg_download_latency_msB' onClick={() => handleMetricSelect('avg_download_latency_ms',true)}>Average Download Latency ms</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_download_speed_mbpsB' onClick={() => handleMetricSelect('avg_download_speed_mbps',true)}>Average Download Speed mbps</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_packet_lossB' onClick={() => handleMetricSelect('avg_packet_loss',true)}>Average Packet Loss</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_upload_latency_msB' onClick={() => handleMetricSelect('avg_upload_latency_ms',true)}>Average Upload Latency ms</Dropdown.Item>
-                                                <Dropdown.Item as="button" key='avg_upload_speed_mbpsB' onClick={() => handleMetricSelect('avg_upload_speed_mbps',true)}>Average Upload Speed mbps</Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                        <Button onClick={() => generateGraphs(true)}>Generate graphs</Button>
-                                       {betweenGraphDataReady ?(
-                                        <BarChart chartData={betweenGraphData}/>
-                                       ):(
-                                        <p><i>Please click generate to generate a graph, if you have already clicked generate, please wait a few seconds</i></p>
-                                       )}
-                                    </>
-                                    
-                                    
-                                ):(
-                                    <p><i>Please Select Your countries</i></p>
-                                )}
-                            </Tab>
-                        </Tabs>
-
-
-
-
-        </div>
+                {betweenGraphDataReady && !compareDataLoading && (
+                    <BarChart chartData={betweenGraphData} />
+                )}
+                {!betweenGraphDataReady && !compareDataLoading && (
+                    <p><i>Please click generate to generate a graph, if you have already clicked generate, please wait a few seconds</i></p>
+                )}
+                {compareDataLoading && (
+                    <Spinner />
+                )}
+            </>
+        ) : (
+            <p><i>Please Select Your countries</i></p>
+        )}
+    </Tab>
+</Tabs>
+</div>
+        
 
     )
-
+    
 }
 
 export default MLABPage;
