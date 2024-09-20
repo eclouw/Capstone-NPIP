@@ -1,0 +1,84 @@
+
+.container{
+    width: 100%;
+    height: 100%;
+}
+
+
+.mapboxgl-map{
+    width:100%;
+    height: 100%;
+}
+
+.map-data-container{
+    width: 100%;
+    height:100%;
+    display:flex;
+}
+
+.leaflet-container{
+    height: 400px;
+    
+}
+
+body{
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.row{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+
+.col{
+    display: inline-block;
+    align-items: center;
+    padding: 20px;
+
+}
+
+.col-heatmaps{
+    display: inline-block;
+    align-items: center;
+    padding: 20px;
+
+}
+
+.col-countries{
+    display: inline-block;
+    align-items: center;
+    padding: 20px;
+}
+
+.col-countries:first-child{
+    border-right: 2px solid #000;
+}
+
+.graph{
+    background-color: #EEF4ED;
+}
+
+.accordion-button {
+    background-color: #134074 !important;
+    color: white;
+  }
+  
+  .accordion-button:focus {
+    box-shadow: none;
+  }
+  
+  .accordion-button:not(.collapsed) {
+    background-color: #134074 !important;
+    color: white;
+  }
+
+  .accordion-body{
+    background-color: #13315C !important;
+    color: white;
+    overflow: scroll;
+  }
+
+
+

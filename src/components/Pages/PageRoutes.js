@@ -1,0 +1,25 @@
+import NavBar from "../NavBar";
+import PageHome from "./PageHome";
+import { Route, Routes } from "react-router-dom";
+import PageRipeAtlas from "./PageRipeAtlas.js";
+import './styles.css'
+import MLABPage from "./MLABPage.js";
+
+//Manages all the routing between pages
+function PageRoutes(){
+    return (
+        <>
+        <NavBar data-bs-theme="dark"/>
+        <div className="container">
+            <Routes>
+                <Route path="/" element={<PageHome/>} />
+
+                <Route path="/PageRipeAtlas" element={<PageRipeAtlas/>} />
+                <Route path="/PageMLAB" element={<MLABPage/>}/>
+            </Routes>
+        </div>
+        </>
+    )
+}
+
+export default PageRoutes;
