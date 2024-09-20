@@ -6,7 +6,6 @@ import './styles.css'
 import MLABPage from "./MLABPage.js";
 
 //Manages all the routing between pages
-//The route to app below is just for testing things
 function PageRoutes(){
     return (
         <>

@@ -1,3 +1,4 @@
+//GENERATE REQUEST FOR THE BACKEND FOR RIPE ATLAS
 const generateProbeRequest = (atrributes, id)=>{
     const attributes = atrributes;
     let request='https://ripe-13prsouz.uc.gateway.dev/compute?/probe_id='+id;

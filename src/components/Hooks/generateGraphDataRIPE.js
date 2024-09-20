@@ -1,4 +1,6 @@
 import axios from "axios";
+
+//MAP DATA INTO A FORMAT THAT CHARTJS CAN READ
 const generateGraphDataRIPE = async(graphData, metric, group, between=false) => {
     let data = [];
     let labelData = [];
@@ -9,63 +11,6 @@ const generateGraphDataRIPE = async(graphData, metric, group, between=false) => 
     const generate =  async() => {
         let FullData = [];
         let i = 0;
-        if (between===true) {
-            
-            let bdata = [[], []];
-            let labelText = '';
-            for (let i = 0; i < 2; i++) {
-                bdata[0].push(graphData[i][0][0].country);
-            }
-            
-            
-            for (let i = 0; i <2; i++) {
-
-                switch (metric) {
-                    case 'avg_download_latency_ms':
-                        
-                        
-                        bdata[1].push(graphData[i][0][0].avg_download_latency_ms);
-                        labelText = 'Average Download Latency ms'
-                        
-                        break;
-                    case 'avg_download_speed_mbps':
-                        
-                        bdata[1].push(graphData[i][0][0].avg_download_speed_mbps);
-                        labelText = 'Average Download Speed mbps'
-                        break;
-                    case 'avg_packet_loss':
-                        bdata[1].push(graphData[i][0][0].avg_packet_loss);
-                        labelText = 'Average Packet Loss'
-                        break;
-                    case 'avg_upload_speed_mbps':
-                        bdata[1].push(graphData[i][0][0].avg_upload_speed_mbps);
-                        labelText = 'Average Upload Speed mbps'
-                        break;
-                    case 'avg_upload_latency_ms':
-                        bdata[1].push(graphData[i][0][0].avg_upload_latency_ms);
-                        labelText = 'Average Upload Latency ms'
-                        break;
-                    case 'download_num_tests':
-                        bdata[1].push(graphData[i][0][0].download_num_tests);
-                        labelText = 'Number of download tests'
-                        break;
-                    case 'upload_num_tests':
-                        bdata[1].push(graphData[i][0][0].upload_num_tests);
-                        labelText = 'Number of upload tests'
-                        break;
-                }
-                
-
-            }
-                
-                
-                
-                bdata =  arrayMapper(labelText, bdata[0], bdata[1]);
-                
-                
-                return bdata;
-
-        } else {
             
             data = [];
             console.log(graphData)
@@ -128,7 +73,7 @@ const generateGraphDataRIPE = async(graphData, metric, group, between=false) => 
             }
 
             
-        }
+        
         
         
         return FullData;

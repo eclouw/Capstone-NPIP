@@ -17,6 +17,7 @@ import generateGraphDataRIPE from "../Hooks/generateGraphDataRIPE";
 import BarChart from "../BarChart";
 
 
+//WEB PAGE FOR GETTING RIPE ATLAS DATA
 function PageRipeAtlas() {
     const position = [17, 0]
     const [measurementTargets, setMeasurementTargets] = useState([]);
@@ -31,9 +32,12 @@ function PageRipeAtlas() {
     const [dataMeasuresTextReady, setDataMeasuresTextReady] = useState(false);
     const [graphDataYear, setGraphDataYear] = useState([], [], [], [])
     const [yearDataReady, setYearDataReady] = useState(false);
+    const [searchProbe, setSearchProbe] = useState('');
+    const [userHasSearched, setUserHasSearched] = useState(false)
+    const [foundSearch, setFoundSearch] = useState(false);
 
+    //GET THE PROBE MARKERS FOR THE MAP
     useEffect(() => {
-
         const getProbeMarkers = async () => {
             const response = await getRipeProbes();
             setProbeMapData(response);
@@ -47,11 +51,11 @@ function PageRipeAtlas() {
         getMeasureMeantDetails();
     }, [])
 
+    //ADD A SELECT PROBE TO THE SELETED PROBE ARRAY
     const addSelectedProbe = (id) => {
         if (selectedProbes.length < 4) {
             const index = selectedProbes.findIndex(item => item.id === id);
             if (index !== -1) {
-
             } else {
                 let data = ([]);
                 data.push({ id: id });
@@ -64,33 +68,31 @@ function PageRipeAtlas() {
 
     }
 
+    //SET THE YEAR VALUE FOR THE QUERY
     const setYearValue = (year, key) => {
         if (key === 'year') {
             setYearYear(year);
         }
     }
-
+    //SET THE METRIC VALUE FOR THE QUERY
     const setMetricValue = (metric, key) => {
         if (key === 'year') {
             setMetricYear(metric);
         }
     }
-
+    //SET THE MEASUREMENT VALUE FOR THE QUERY
     const setMeasurementValue = (measurement, key) => {
         if (key === 'year') {
             setMeasurementYear(measurement);
         }
 
     }
-
+    //SET THE MONTH VALUE FOR THE QUERY
     const setMonthValue = (month) => {
         setMonthValue(month);
     }
 
-    const setGroupValue = (group) => {
-        setGroup(group);
-    }
-
+    //REMOVE A PROBE FROM THE SELECTED PROBE ARRAY
     const removeProbe = (removeID) => {
         const index = selectedProbes.findIndex(item => item.id === removeID);
         if (index !== -1) {
@@ -99,6 +101,7 @@ function PageRipeAtlas() {
         }
     }
 
+    //GET THE DATA FOR USER QUERY FOR SELECTED PROBES AND MAP THEM INTO DATA THAT CHARTJS CAN READ
     const getCommand = async (key) => {
         let data = []
         if (key === 'year') {
@@ -134,6 +137,8 @@ function PageRipeAtlas() {
             let filtered = gData.filter(item => !item.length);
             await setGraphDataYear(gData);
             setYearDataReady(true);
+           
+            
             console.log(graphDataYear)
             console.log(gData);
 
@@ -141,6 +146,7 @@ function PageRipeAtlas() {
         }
     }
 
+    //USEEFFECT TO TELL THE UI TO REFRESH WHEN CERTAIN CONSTS ARE CHANGED
     useEffect(() => {
         console.log(yearDataReady);
         console.log('Graph Data')
@@ -156,24 +162,35 @@ function PageRipeAtlas() {
 
 
 
-    }, [probeMapData], [selectedProbes], [measurementTargets], [dataMeasuresTextReady], [graphDataYear], [yearDataReady])
+    }, [probeMapData], [selectedProbes], [measurementTargets], [dataMeasuresTextReady], [graphDataYear], [yearDataReady], [foundSearch])
 
-    useEffect(() => {
-        console.log(yearDataReady);
-        console.log('Graph Data')
-        console.log(graphDataYear)
-        if (probeMapData.length > 0) {
+    //SET THE VALUE FOR THE PROBESEARCH IF A USER IS USING THE SEARCH BAR
+    const setValueSearchProbe=(value)=>{
+        setSearchProbe(value);
+    }
 
-            setProbeMapDataReady(true);
-        } else {
-            setProbeMapDataReady(false);
-
-
+    //SEARCH FOR A SPECIFIED PROBE
+    const searchForProbe=()=>{
+        setUserHasSearched(false);
+        setFoundSearch(false);
+        let found = false;
+        if (probeMapData.length > 0){
+            console.log(searchProbe);
+            for (let i = 0; i < probeMapData.length;i++){
+                if (probeMapData[i].id == searchProbe){
+                    found = true;
+                addSelectedProbe(searchProbe);
+                setFoundSearch(true);
+                return;
+                }
+                
+            
+            }
         }
 
 
-
-    }, [probeMapData], [selectedProbes], [measurementTargets], [dataMeasuresTextReady], [graphDataYear], [yearDataReady])
+        setUserHasSearched(true);
+    }
 
 
 
@@ -198,12 +215,24 @@ function PageRipeAtlas() {
             <InputGroup className="mb-3">
                     <InputGroup.Text id="probeSearch">Probe Number</InputGroup.Text>
                     <Form.Control
+                        value={searchProbe}
+                        onChange={(e) => setValueSearchProbe(e.target.value)}
                         placeholder="Probe Number"
                         aria-label="ProbeNumber"
                         aria-describedby="basic-addon1"
                     />
-                    <Button>Select</Button>
+                    <Button id="probeSelectButton" onClick={() => { searchForProbe() }}>Select</Button>
                 </InputGroup>
+                {userHasSearched && foundSearch &&(
+                    <p>Added Probe</p>
+                )}
+                    
+                
+                {userHasSearched && !foundSearch &&(
+                    <p>Probe not found</p>
+                )}
+                    
+                
                 
             </Col>
                 
@@ -382,10 +411,10 @@ function PageRipeAtlas() {
                                         <>
                                             <p>READY</p>
 
-                                            {graphDataYear.map((item) => (
+                                            {graphDataYear.map((item, index) => (
 
                                                 <>
-                                                    <p>here</p>
+                                                    {selectedProbes}
                                                     <BarChart chartData={item} />
                                                 </>
 

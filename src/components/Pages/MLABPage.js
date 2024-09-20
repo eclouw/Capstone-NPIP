@@ -10,6 +10,7 @@ import LineChart from '../LineChart';
 <link ref="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet"></link>
 Chart.register(...registerables);
 
+//PAGE FOR MLAB DATA
 function MLABPage() {
     const [countryList, setCountryList] = useState(['Please Select a Country']);
     const [country, setCountry] = useState([{ name: null, index: 0 }, { name: null, index: 1 }])
@@ -32,6 +33,7 @@ function MLABPage() {
     const [dataLoading, setDataLoading] = useState(false);
     const [compareDataLoading, setCompareDataLoading] = useState(false);
 
+    //GET A LIST OF COUNTRIES
     useEffect(()=>{
         getCountryList();
     })
@@ -174,6 +176,7 @@ function MLABPage() {
 
     }
 
+    //FETCH DATA FOR THE GRAPH FROM THE BACKEND
     const fetchGraphData = async(between) => {
         const data = [];
         for (let i = 0; i < country.length; i++) {
@@ -194,6 +197,7 @@ function MLABPage() {
 
     }
 
+    //FETCH DATA FROM THE BACKEND
     const fetchData = async (country, year, grouping) => {
         const response = await getMLABDATA(country, year, grouping, 'compute', false);
         return response;

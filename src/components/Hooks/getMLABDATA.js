@@ -1,11 +1,8 @@
 import axios from "axios";
 import { useEffect } from "react";
-
+//GET MLAB DATA FROM THE BACKEND
 const getMLABDATA= async(country, year, group, table, between, country2)=>{
-    
-    
-    
-    
+
         const data = async()=>{
             if (country != "all"){
                 if (between){

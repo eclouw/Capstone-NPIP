@@ -1,3 +1,5 @@
+
+//MAP DATA INTO A FORMAT THAT CHART JS CAN READ
 const generateGraphDataMLAB = async (graphData, metric, group, between) => {
     let data = [];
     let labelData = [];

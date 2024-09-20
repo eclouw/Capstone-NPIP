@@ -1,8 +1,7 @@
 import axios from "axios";
+
+//GET A LIST OF PROBES FROM THE BACKEND, CACHE THEM
 const getRipeProbes = async()=>{
-
-    
-
     const mapProbes= async(probeData)=>{
         const mappedProbes = ([]);
         for (let i=0; i < probeData.data.length; i++){
