@@ -2,33 +2,33 @@ const generateGraphDataMLAB = async (graphData, metric, group, between) => {
     let data = [];
     let labelData = [];
     let Dataset = [];
-    console.log('data to be iterated');
-    console.log(graphData);
+    
+    
 
     const generate = async () => {
         let FullData = [[], []];
         let i = 0;
         if (between) {
-            console.log('between time')
+            
             let bdata = [[], []];
             let labelText = '';
             for (let i = 0; i < 2; i++) {
                 bdata[0].push(graphData[i][0][0].country);
             }
-            console.log('graph length')
-            console.log(graphData[0][0][0].length)
+            
+            
             for (let i = 0; i <2; i++) {
 
                 switch (metric) {
                     case 'avg_download_latency_ms':
-                        console.log(graphData[i][0][0].avg_download_latency_ms)
-                        console.log(bdata);
+                        
+                        
                         bdata[1].push(graphData[i][0][0].avg_download_latency_ms);
                         labelText = 'Average Download Latency ms'
-                        console.log(labelText);
+                        
                         break;
                     case 'avg_download_speed_mbps':
-                        console.log(graphData[i][0][0]);
+                        
                         bdata[1].push(graphData[i][0][0].avg_download_speed_mbps);
                         labelText = 'Average Download Speed mbps'
                         break;
@@ -56,12 +56,12 @@ const generateGraphDataMLAB = async (graphData, metric, group, between) => {
                 
 
             }
-                console.log('data to be mapped')
-                console.log(bdata);
-                console.log(bdata[1]);
+                
+                
+                
                 bdata = await arrayMapper(labelText, bdata[0], bdata[1]);
-                console.log('this will be returned');
-                console.log(bdata);
+                
+                
                 return bdata;
 
         } else {
@@ -201,8 +201,8 @@ const generateGraphDataMLAB = async (graphData, metric, group, between) => {
 
             
         }
-        console.log('FULLDATA')
-        console.log(FullData);
+        
+        
         return FullData;
     }
 
@@ -215,15 +215,15 @@ const generateGraphDataMLAB = async (graphData, metric, group, between) => {
                 {
                     label: labelText,
                     data: dataSetData,
-                    backgroundColor: ["#000"],
+                    backgroundColor: ["#Ffffff"],
                     fill: false,
                     borderColor: "black",
                     borderWidth: 2,
                 },
             ],
         };
-        console.log("mapped array");
-        console.log(data);
+        
+        
         return data;
     };
 

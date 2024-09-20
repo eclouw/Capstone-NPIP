@@ -32,9 +32,12 @@ function MLABPage() {
     const [dataLoading, setDataLoading] = useState(false);
     const [compareDataLoading, setCompareDataLoading] = useState(false);
 
+    useEffect(()=>{
+        getCountryList();
+    })
     useEffect(() => {
 
-        getCountryList();
+        
     }, [country, year, metric, group, readyForParam, graphsChanged, graphData, betweenGraphData])
 
     //FUNCTION FOR WHEN THE USER SELECTS A COUNTRY FROM THE DROPDOWN
@@ -42,7 +45,7 @@ function MLABPage() {
         const data = [...country]
         data[index].name = sCountry
         setCountry(data);
-        console.log(country);
+        
         if (bothSelected()) {
             setReadyForParam(true);
         }
@@ -58,6 +61,7 @@ function MLABPage() {
         
     }
 
+    //WHEN THE USER SELECTS A METRIC AS A FILTER
     const handleMetricSelect = (metric, between) => {
         if (between){
             switch(metric){
@@ -101,17 +105,18 @@ function MLABPage() {
         
     }
 
+    //WHEN THE USER SELECTS THE GROUPING FOR THE DATA
     const handleGroupSelect = (group) => {
         setGroup(group);
     }
 
     //DETERMINE WHETHER THE USER HAS TWO COUNTRIES SELECTED
     const bothSelected = () => {
-        console.log('checking')
+        
         let bSelected = true;
         for (let i = 0; i < country.length; i++) {
             if (country[i].name === null) {
-                console.log(country[i].name);
+                
                 bSelected = false;
             }
         }
@@ -127,42 +132,40 @@ function MLABPage() {
     }
 
 
-
-    const generateGraphs = async (between) => {
-        setDataLoading(true);
-        setCompareDataLoading(true);
+    //GENERATE THE GRAPH DATA
+    const generateGraphs = async (between) => { 
         if (between){
-            console.log('between is true')
+            
+            setCompareDataLoading(true);
             setBetweenGraphData([]);
             if (await fetchGraphData(true)){
                 setBetweenGraphDataReady(false);
                 const data = await generateGraphDataMLAB(betweenGraphData, betweenMetric, null, true);
-                console.log(data);
-                console.log('above');
                 setBetweenGraphData(data)
                 setBetweenGraphDataFormatted(data)
                 setBetweenGraphDataReady(true)
                 setCompareDataLoading(false);
             }
-            console.log(betweenGraphData)
+            
             
         }else{
-            console.log('between is false')
+            setDataLoading(true);
+            
             let data = [];
             setGraphDataReady(false);
             setGraphData([]);
         if (await fetchGraphData(false)) {
             
-            console.log('time for mapping')
+            
             const data = await generateGraphDataMLAB(graphData, metric, group,false);
             await setGraphData(data);
-            console.log('Graph data')
-            console.log(graphData)
+            
+            
             setGraphDataReady(true);
             setGraphsChanged(true);
-            console.log('graphdata length')
-            console.log(graphData.length)
-            console.log(graphData)
+            
+            
+            
             setDataLoading(false);
         }
         }
@@ -172,12 +175,8 @@ function MLABPage() {
     }
 
     const fetchGraphData = async(between) => {
-        
         const data = [];
-        console.log('country array length')
-        console.log(country.length)
         for (let i = 0; i < country.length; i++) {
-            console.log(country[i].name);
             if (between){
                 const response = await fetchData(country[i].name, betweenYear, 'country');
                 betweenGraphData[i] = [response.data]
@@ -197,8 +196,6 @@ function MLABPage() {
 
     const fetchData = async (country, year, grouping) => {
         const response = await getMLABDATA(country, year, grouping, 'compute', false);
-        console.log('response from hook')
-        console.log(response)
         return response;
     }
 
@@ -212,7 +209,7 @@ function MLABPage() {
             <div class="row">
                 {country.map((country) => (
                     <div class="col">
-                        <h2>Selected country: {country.name}</h2>
+                        <h2>Selected country code: {country.name}</h2>
 
                         
                         {countryListLoaded && (

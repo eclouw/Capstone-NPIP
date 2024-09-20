@@ -3,8 +3,8 @@ import { useEffect } from "react";
 
 const getMLABDATA= async(country, year, group, table, between, country2)=>{
     
-    console.log('called function to get Data')
-    console.log(country)
+    
+    
     
         const data = async()=>{
             if (country != "all"){
@@ -20,11 +20,18 @@ const getMLABDATA= async(country, year, group, table, between, country2)=>{
                 
                 
             }else{
-                
+                const loadCodes = async()=>{
+                    const cachedData = localStorage.getItem('cc');
+                    if (cachedData){
+                        return JSON.parse(cachedData)
+                    }
+                }
                 const response = await fetchData("https://mlab-13prsouz.uc.gateway.dev/compute/"+
                     "?year="+year+"&group_by="+group);
-            console.log('data response');
-            console.log(response.data);
+
+                localStorage.setItem('cc',JSON.stringify(response))
+            
+            
             return response;
             }
             
@@ -34,15 +41,15 @@ const getMLABDATA= async(country, year, group, table, between, country2)=>{
     
     
     const fetchData=async(command)=>{
-        console.log('fetching data')
-        console.log(command);
+        
+        
         const dataResponse = await axios.get(command);
         
         return dataResponse.data;
     };
     
     
-    console.log('re')
+    
     return await data();
 
 }

@@ -17,7 +17,7 @@ export default function LeafletTest() {
           setLoadingData(true)
           setHaveData(false)
           const response = await axios.post("https://get-probes-86452853723.us-central1.run.app/?country_code=ZA&prefix_type=v4")
-          console.log({response})
+          
           //Set the LatencyData to the data that was retrieved from MLab
           setTestingData({
             labels: response.data.data.map((data) => data.country),
@@ -30,7 +30,7 @@ export default function LeafletTest() {
             }]
           });
           const response1 = await axios.post("https://get-probes-86452853723.us-central1.run.app/?is_anchor=true&status_since=1685444191") //attempt to get response from backend
-          console.log({response1})
+          
           //Set the LatencyData to the data that was retrieved from MLab
           setTestingData({
             labels: response1.data.data.map((data) => data.country),
@@ -43,7 +43,7 @@ export default function LeafletTest() {
             }]
           });
           const response2 = await axios.post("https://get-measurements-86452853723.us-central1.run.app/?probe_id=1000237&year=2023")
-          console.log({response2})
+          
           //Set the LatencyData to the data that was retrieved from MLab
           setTestingData({
             labels: response2.data.data.map((data) => data.country),
@@ -57,12 +57,12 @@ export default function LeafletTest() {
           });
           
           
-          console.log("Fetched the data")
+          
           setLoadingData(false);
           setHaveData(true);
-          console.log({testingData})
+          
         } catch(e){
-          console.log(e);
+          
         }
       }
 

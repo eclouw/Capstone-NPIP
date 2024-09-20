@@ -8,11 +8,13 @@ import { Icon } from "leaflet";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Card, Button, ListGroup, CloseButton, Dropdown, Tab, Tabs } from "react-bootstrap";
+import { Card, Button, ListGroup, CloseButton, Dropdown, Tab, Tabs, InputGroup, Form } from "react-bootstrap";
 import getRIPEDATA from "../Hooks/getRIPEDATA";
 import dataMeasurements from "../../dataStorage/measurements";
 import generateProbeRequest from "../Hooks/generateProbeRequest";
 import getRIPEDATADIRECT from "../Hooks/getRIPEDATADIRECT";
+import generateGraphDataRIPE from "../Hooks/generateGraphDataRIPE";
+import BarChart from "../BarChart";
 
 
 function PageRipeAtlas() {
@@ -27,58 +29,58 @@ function PageRipeAtlas() {
     const [metricYear, setMetricYear] = useState('RTT Average')
     const [measurementYear, setMeasurementYear] = useState('a.root-servers.net');
     const [dataMeasuresTextReady, setDataMeasuresTextReady] = useState(false);
+    const [graphDataYear, setGraphDataYear] = useState([], [], [], [])
+    const [yearDataReady, setYearDataReady] = useState(false);
 
     useEffect(() => {
-        console.log(dataMeasurements);
+
         const getProbeMarkers = async () => {
             const response = await getRipeProbes();
             setProbeMapData(response);
-
         }
         const getMeasureMeantDetails = async () => {
             const data = await dataMeasurements();
             setMeasurementTargets(data);
             setDataMeasuresTextReady(true);
-
         }
         getProbeMarkers();
         getMeasureMeantDetails();
     }, [])
 
     const addSelectedProbe = (id) => {
-        if (selectedProbes.length < 4){
-                const index = selectedProbes.findIndex(item => item.id === id);
+        if (selectedProbes.length < 4) {
+            const index = selectedProbes.findIndex(item => item.id === id);
             if (index !== -1) {
-                console.log('Already selected')
+
             } else {
                 let data = ([]);
                 data.push({ id: id });
                 setSelectedProbes((currentSelectedProbes) => ([...currentSelectedProbes, ...data]));
-                
+
+            }
         }
-        }
-        
+
 
 
     }
 
     const setYearValue = (year, key) => {
-        if (key==='year'){
+        if (key === 'year') {
             setYearYear(year);
         }
     }
 
-    const setMetricValue = (metric, key)=>{
-        if (key==='year'){
+    const setMetricValue = (metric, key) => {
+        if (key === 'year') {
             setMetricYear(metric);
         }
     }
 
     const setMeasurementValue = (measurement, key) => {
-        if (key==='year'){
+        if (key === 'year') {
             setMeasurementYear(measurement);
         }
-        
+
     }
 
     const setMonthValue = (month) => {
@@ -97,16 +99,52 @@ function PageRipeAtlas() {
         }
     }
 
-    const getCommand=(key)=>{
-        if (key === 'year'){
-            console.log(selectedProbes);
-            let request = generateProbeRequest([[{key: 'year', value: yearYear}],[{key: 'group', value: 'month'}]], parseInt(selectedProbes[0].id));
-            getRIPEDATADIRECT(request);
+    const getCommand = async (key) => {
+        let data = []
+        if (key === 'year') {
+            setYearDataReady(false);
+            setGraphDataYear([])
+            let metricKey = ''
+            switch (metricYear) {
+                case 'RTT Average':
+                    metricKey = 'avg_rtt'
+                    break;
+                case 'RTT Min':
+                    metricKey = 'min_rtt'
+                    break;
+                case 'RTT Max':
+                    metricKey = 'max_rtt'
+                    break;
+            }
+            for (let i = 0; i < selectedProbes.length; i++) {
+                let request = generateProbeRequest([[{ key: 'year', value: yearYear }], [{ key: 'group', value: 'month' }]], parseInt(selectedProbes[i].id));
+                console.log(request);
+                const response = await getRIPEDATADIRECT(request);
+                console.log(response);
+                data[i] = response;
+                console.log('data')
+                console.log(data);
+
+
+            }
+
+
+
+            const gData = await generateGraphDataRIPE(data, metricKey, 'month');
+            let filtered = gData.filter(item => !item.length);
+            await setGraphDataYear(gData);
+            setYearDataReady(true);
+            console.log(graphDataYear)
+            console.log(gData);
+
 
         }
     }
 
     useEffect(() => {
+        console.log(yearDataReady);
+        console.log('Graph Data')
+        console.log(graphDataYear)
         if (probeMapData.length > 0) {
 
             setProbeMapDataReady(true);
@@ -115,18 +153,34 @@ function PageRipeAtlas() {
 
 
         }
-        console.log(dataMeasuresTextReady);
-        console.log(measurementTargets);
 
-    }, [probeMapData], [selectedProbes], [measurementTargets], [dataMeasuresTextReady])
 
-    const test = (id) => {
-        console.log(id);
-    }
 
-    const generateGraph = (id) => {
-        console.log(getRIPEDATA('62557', 'compute', '1009', 'year', 2020));
-    }
+    }, [probeMapData], [selectedProbes], [measurementTargets], [dataMeasuresTextReady], [graphDataYear], [yearDataReady])
+
+    useEffect(() => {
+        console.log(yearDataReady);
+        console.log('Graph Data')
+        console.log(graphDataYear)
+        if (probeMapData.length > 0) {
+
+            setProbeMapDataReady(true);
+        } else {
+            setProbeMapDataReady(false);
+
+
+        }
+
+
+
+    }, [probeMapData], [selectedProbes], [measurementTargets], [dataMeasuresTextReady], [graphDataYear], [yearDataReady])
+
+
+
+
+
+
+
 
     const iconGreen = new Icon({
         iconUrl: "/data/marker-green.png",
@@ -138,8 +192,23 @@ function PageRipeAtlas() {
         iconSize: [38, 38]
     })
     return (
-        <>
-            <div className="Ripe" data-bs-theme="dark">
+        <>  <div className="Ripe" data-bs-theme="dark">
+            <Row>
+            <Col>
+            <InputGroup className="mb-3">
+                    <InputGroup.Text id="probeSearch">Probe Number</InputGroup.Text>
+                    <Form.Control
+                        placeholder="Probe Number"
+                        aria-label="ProbeNumber"
+                        aria-describedby="basic-addon1"
+                    />
+                    <Button>Select</Button>
+                </InputGroup>
+                
+            </Col>
+                
+            </Row>
+            
                 <Container>
                     <Row>
                         <Col xs={25} style={{ marginTop: '20px' }}>
@@ -156,11 +225,7 @@ function PageRipeAtlas() {
                                                 <MarkerClusterGroup>
 
                                                     {marker.status === 1 ? (
-                                                        <Marker position={[marker.lat, marker.lng]} icon={iconGreen} id={marker.id} eventHandlers={{
-                                                            click: () => {
-                                                                test(marker.id);
-                                                            },
-                                                        }}>
+                                                        <Marker position={[marker.lat, marker.lng]} icon={iconGreen} id={marker.id}>
                                                             <Popup>
                                                                 <b>Country Code: </b>{marker.countryCode}<br />
                                                                 <b>Probe ID: </b>{marker.id}<br />
@@ -172,11 +237,7 @@ function PageRipeAtlas() {
                                                             </Popup>
                                                         </Marker>
                                                     ) : (
-                                                        <Marker position={[marker.lat, marker.lng]} icon={iconRed} eventHandlers={{
-                                                            click: () => {
-                                                                test(marker.id);
-                                                            },
-                                                        }}>
+                                                        <Marker position={[marker.lat, marker.lng]} icon={iconRed}>
                                                             <Popup>
                                                                 <b>Country Code: </b>{marker.countryCode}<br />
                                                                 <b>Probe ID: </b>{marker.id}<br />
@@ -245,7 +306,7 @@ function PageRipeAtlas() {
 
                         </Col>
                     </Row>
-                    
+
                     <Row>
 
 
@@ -254,77 +315,94 @@ function PageRipeAtlas() {
 
                 <Tabs defaultActiveKey="yearly" id="tabRIPE" className='mb-3'>
                     <Tab eventKey="yearly" title="Data for specific year">
-                    <Card style={{ maxWidth: '100%' }}>
-                    <Card.Body>
-                        <h3>Selected Measurement: {measurementYear}</h3>
-                        {measurementTargets.length > 0 && dataMeasuresTextReady && (
-                            <Dropdown>
-                                <Dropdown.Toggle>
-                                    Select a Measurement
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                    {measurementTargets.map((data) => (
-                                        <Dropdown.Item as="button" key={data.target} onClick={() => setMeasurementValue(data.target, 'year')}>
-                                            {data.target}
-                                        </Dropdown.Item>
+                        <Card style={{ maxWidth: '100%' }}>
+                            <Card.Body>
+                                <h3>Selected Measurement: {measurementYear}</h3>
+                                {measurementTargets.length > 0 && dataMeasuresTextReady && (
+                                    <Dropdown>
+                                        <Dropdown.Toggle>
+                                            Select a Measurement
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            {measurementTargets.map((data) => (
+                                                <Dropdown.Item as="button" key={data.target} onClick={() => setMeasurementValue(data.target, 'year')}>
+                                                    {data.target}
+                                                </Dropdown.Item>
 
-                                    ))}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        )}
+                                            ))}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                )}
 
-                        <h3>Selected Year: {yearYear}</h3>
-                            <Dropdown>
-                                <Dropdown.Toggle>
-                                    Select a Year
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
+                                <h3>Selected Year: {yearYear}</h3>
+                                <Dropdown>
+                                    <Dropdown.Toggle>
+                                        Select a Year
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
 
-                                    <Dropdown.Item as="button" key='2020Year' onClick={() => setYearValue('2020', 'year')}>2021</Dropdown.Item>
-                                    <Dropdown.Item as="button" key='2021Year' onClick={() => setYearValue('2021', 'year')}>2020</Dropdown.Item>
-                                    <Dropdown.Item as="button" key='2022Year' onClick={() => setYearValue('2022', 'year')}>2022</Dropdown.Item>
-                                    <Dropdown.Item as="button" key='2023Year' onClick={() => setYearValue('2023', 'year')}>2023</Dropdown.Item>
-                                    <Dropdown.Item as="button" key='2024Year' onClick={() => setYearValue('2024', 'year')}>2024</Dropdown.Item>
+                                        <Dropdown.Item as="button" key='2020Year' onClick={() => setYearValue('2020', 'year')}>2021</Dropdown.Item>
+                                        <Dropdown.Item as="button" key='2021Year' onClick={() => setYearValue('2021', 'year')}>2020</Dropdown.Item>
+                                        <Dropdown.Item as="button" key='2022Year' onClick={() => setYearValue('2022', 'year')}>2022</Dropdown.Item>
+                                        <Dropdown.Item as="button" key='2023Year' onClick={() => setYearValue('2023', 'year')}>2023</Dropdown.Item>
+                                        <Dropdown.Item as="button" key='2024Year' onClick={() => setYearValue('2024', 'year')}>2024</Dropdown.Item>
 
-                                
-                                </Dropdown.Menu>
-                            </Dropdown>
 
-                            <h3>Metric: {metricYear}</h3>
-                            <Dropdown>
-                                <Dropdown.Toggle>
-                                    Select a Metric
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
+                                    </Dropdown.Menu>
+                                </Dropdown>
 
-                                    <Dropdown.Item as="button" key='rttMinYear' onClick={() => setMetricValue('RTT Min','year')}>RTT Min</Dropdown.Item>
-                                    <Dropdown.Item as="button" key='rttMaxYear' onClick={() => setMetricValue('RTT Max','year')}>RTT Max</Dropdown.Item>
-                                    <Dropdown.Item as="button" key='rttAverageYear' onClick={() => setMetricValue('RTT Average','year')}>RTT Average</Dropdown.Item>
-                             
+                                <h3>Metric: {metricYear}</h3>
+                                <Dropdown>
+                                    <Dropdown.Toggle>
+                                        Select a Metric
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
 
-                                
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        
+                                        <Dropdown.Item as="button" key='rttMinYear' onClick={() => setMetricValue('RTT Min', 'year')}>RTT Min</Dropdown.Item>
+                                        <Dropdown.Item as="button" key='rttMaxYear' onClick={() => setMetricValue('RTT Max', 'year')}>RTT Max</Dropdown.Item>
+                                        <Dropdown.Item as="button" key='rttAverageYear' onClick={() => setMetricValue('RTT Average', 'year')}>RTT Average</Dropdown.Item>
 
-                            {selectedProbes.length > 0 ?(
-                            <Button variant="primary" size="lg" style={{marginTop:'20px'}} onClick={()=>getCommand('year')}>
-                            Generate Graphs
-                            </Button>
-                        ):(
-                            <Button variant="primary" size="lg" disabled style={{marginTop:'20px'}}>
-                                Please select at least one probe
-                            </Button>
-                        )}
-                    </Card.Body>
-                </Card>
-                        
+
+
+                                    </Dropdown.Menu>
+                                </Dropdown>
+
+
+                                {selectedProbes.length > 0 ? (
+                                    <Button variant="primary" size="lg" style={{ marginTop: '20px' }} onClick={() => getCommand('year')}>
+                                        Generate Graphs
+                                    </Button>
+                                ) : (
+                                    <Button variant="primary" size="lg" disabled style={{ marginTop: '20px' }}>
+                                        Please select at least one probe
+                                    </Button>
+                                )}
+                                <div>
+                                    {yearDataReady && graphDataYear.length > 0 && (
+                                        <>
+                                            <p>READY</p>
+
+                                            {graphDataYear.map((item) => (
+
+                                                <>
+                                                    <p>here</p>
+                                                    <BarChart chartData={item} />
+                                                </>
+
+
+                                            ))}
+                                        </>
+                                    )}
+                                </div>
+                            </Card.Body>
+                        </Card>
+
                     </Tab>
 
                 </Tabs>
-                
+
             </div>
-            
+
 
         </>
     )

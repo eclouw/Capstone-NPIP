@@ -13,8 +13,8 @@ const arrayMapper = async(labelText, labelData, dataSetData) => {
             },
         ],
     };
-    console.log("mapped array");
-    console.log(data);
+    
+    
     return data;
 };
 

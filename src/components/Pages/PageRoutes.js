@@ -1,5 +1,4 @@
 import NavBar from "../NavBar";
-import PageMLAB from "./PageMLAB";
 import PageHome from "./PageHome";
 import { Route, Routes } from "react-router-dom";
 import PageRipeAtlas from "./PageRipeAtlas.js";

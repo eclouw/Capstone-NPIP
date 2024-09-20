@@ -3,7 +3,7 @@ const generateProbeRequest = (atrributes, id)=>{
     let request='https://ripe-13prsouz.uc.gateway.dev/compute?/probe_id='+id;
     const genReq=()=>{
         for (let i =0; i< attributes.length;i++){
-            console.log(attributes);
+            
             switch (attributes[i][0].key){
                 case 'group':
                     request = request+ '&group_by='+atrributes[i][0].value;

@@ -24,11 +24,11 @@ const getRipeProbes = async()=>{
         const loadProbes =async()=>{
         const cachedData = localStorage.getItem('probes');
         if (cachedData){
-            console.log('found cache')
+            
             return JSON.parse(cachedData);
         }
         const response = await axios.get('https://ripe-13prsouz.uc.gateway.dev/probes');
-        console.log(response);
+        
         const probeData= await mapProbes(response.data);
 
         localStorage.setItem('probes',JSON.stringify(probeData))
