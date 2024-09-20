@@ -1,6 +1,8 @@
 Overview
 This is a React.js webapp that allows for retrieving data from a backend server from MLAB and Ripe Atlas to use this data for viewing visually in charts
 
+Google Cloud Code:
+    There is a folder in the project located at 'CAPSTONE-NPIP/src/google_cloud'. This folder contains the backend code that is run on the google cloud servers. These do not run locally and are there for reference.
 
 Installation and Setup
 
