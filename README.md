@@ -1,4 +1,6 @@
 <h1>Computer Science Capstone Project</h1>
+<h2>My contribution</h2>
+I worked on the frontend of the project. The backend coding was performed by other group members
 
 Overview:
 This is a React.js webapp that allows for retrieving data from a backend server from MLAB and Ripe Atlas to use this data for viewing visually in charts
