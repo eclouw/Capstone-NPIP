@@ -17,7 +17,7 @@ This is a React.js webapp that allows for retrieving data from a backend server 
 <h4>Installation Steps</h4>
 1. Clone the repository
     using the following on the terminal:
-    git clone https://gitlab.cs.uct.ac.za/lwxeth001/capstone-npip
+    git clone https://github.com/eclouw/Capstone-NPIP
 
 2. Navigate into the project directory
     using the following on the terminal:
