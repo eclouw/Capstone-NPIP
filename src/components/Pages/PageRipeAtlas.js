@@ -9,12 +9,11 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Card, Button, ListGroup, CloseButton, Dropdown, Tab, Tabs, InputGroup, Form } from "react-bootstrap";
-import getRIPEDATA from "../Hooks/getRIPEDATA";
 import dataMeasurements from "../../dataStorage/measurements";
 import generateProbeRequest from "../Hooks/generateProbeRequest";
 import getRIPEDATADIRECT from "../Hooks/getRIPEDATADIRECT";
 import generateGraphDataRIPE from "../Hooks/generateGraphDataRIPE";
-import BarChart from "../BarChart";
+import GraphFactory from "../GraphFactory";
 
 
 //WEB PAGE FOR GETTING RIPE ATLAS DATA
@@ -24,9 +23,7 @@ function PageRipeAtlas() {
     const [probeMapData, setProbeMapData] = useState([]);
     const [probeMapDataReady, setProbeMapDataReady] = useState([false])
     const [selectedProbes, setSelectedProbes] = useState([]);
-    const [year, setYear] = useState('2024');
     const [yearYear, setYearYear] = useState('2024')
-    const [group, setGroup] = useState();
     const [metricYear, setMetricYear] = useState('RTT Average')
     const [measurementYear, setMeasurementYear] = useState('a.root-servers.net');
     const [dataMeasuresTextReady, setDataMeasuresTextReady] = useState(false);
@@ -39,13 +36,23 @@ function PageRipeAtlas() {
     //GET THE PROBE MARKERS FOR THE MAP
     useEffect(() => {
         const getProbeMarkers = async () => {
-            const response = await getRipeProbes();
-            setProbeMapData(response);
+            try{
+                const response = await getRipeProbes();
+                setProbeMapData(response);
+            }catch(error){
+                console.log(error);
+            }
+            
         }
         const getMeasureMeantDetails = async () => {
-            const data = await dataMeasurements();
-            setMeasurementTargets(data);
-            setDataMeasuresTextReady(true);
+            try{
+                const data = await dataMeasurements();
+                setMeasurementTargets(data);
+                setDataMeasuresTextReady(true);
+            }catch(error){
+                console.log(error);
+            }
+            
         }
         getProbeMarkers();
         getMeasureMeantDetails();
@@ -226,8 +233,7 @@ function PageRipeAtlas() {
                 {userHasSearched && foundSearch &&(
                     <p>Added Probe</p>
                 )}
-                    
-                
+
                 {userHasSearched && !foundSearch &&(
                     <p>Probe not found</p>
                 )}
@@ -415,7 +421,7 @@ function PageRipeAtlas() {
 
                                                 <>
                                                     {selectedProbes}
-                                                    <BarChart chartData={item} />
+                                                    <GraphFactory chartData={item} type={'bar'}/>
                                                 </>
 
 

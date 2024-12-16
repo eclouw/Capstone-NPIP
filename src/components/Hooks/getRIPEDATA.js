@@ -4,6 +4,7 @@ import axios from "axios";
 const getRIPEDATA = async(id, table, measurement, group, year, month) =>{
 
     const fetchData = async()=>{
+        try{
         if (table === 'measurements'){
             if (month != null){
                 const response = await axios.get('https://ripe-13prsouz.uc.gateway.dev/measurements?probe_id='+
@@ -27,10 +28,13 @@ const getRIPEDATA = async(id, table, measurement, group, year, month) =>{
             }
             
         }
+    }catch(error){
+        console.log(error);
     }
     
     const data = await fetchData();
     return data();
+}
 }
 
 

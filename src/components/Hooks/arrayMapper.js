@@ -1,12 +1,11 @@
-import axios from "axios";
-const arrayMapper = async(labelText, labelData, dataSetData) => {
+const arrayMapper = (labelText, labelData, dataSetData) => {
     const data = {
         labels: labelData,
         datasets: [
             {
                 label: labelText,
                 data: dataSetData,
-                backgroundColor: ["#000"],
+                backgroundColor: ["#Ffffff"],
                 fill: false,
                 borderColor: "black",
                 borderWidth: 2,

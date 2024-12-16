@@ -3,10 +3,9 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import getMLABDATA from '../Hooks/getMLABDATA';
 import { Dropdown, Button, Card, Spinner, Tab, Tabs } from 'react-bootstrap';
-import BarChart from '../BarChart';
 import { Chart, registerables } from 'chart.js';
 import generateGraphDataMLAB from '../Hooks/generateGraphDataMLAB';
-import LineChart from '../LineChart';
+import GraphFactory from '../GraphFactory';
 <link ref="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet"></link>
 Chart.register(...registerables);
 
@@ -127,9 +126,14 @@ function MLABPage() {
 
     //LOAD A LIST OF COUNTRIES THAT HAVE DATA
     const getCountryList = async () => {
-        const cList = await getMLABDATA('all', '2024', 'country', 'compute', false)
-        setCountryList(cList.data);
-        setCountryListLoad(true);
+        try{
+            const cList = await getMLABDATA('all', '2024', 'country', 'compute', false);
+            setCountryList(cList.data);
+            setCountryListLoad(true);
+        }catch(error){
+            console.log(error);
+        }
+        
 
     }
 
@@ -293,10 +297,10 @@ function MLABPage() {
                         {graphData?.map((currentGraph) => (
                             <Tabs defaultActiveKey="barGraphInner" id="chartTypeInner" className='mb-3'>
                                 <Tab eventKey="barGraphInner" title="Bar Graph">
-                                    <p><BarChart chartData={currentGraph} /></p>
+                                    <p><GraphFactory chartData={currentGraph} type={'bar'}/></p>
                                 </Tab>
                                 <Tab eventKey="lineGraphInner" title="Line Graph">
-                                    <p><LineChart chartData={currentGraph} /></p>
+                                    <p><GraphFactory chartData={currentGraph} type={'line'}/></p>
                                 </Tab>
                             </Tabs>
                         ))}
@@ -345,7 +349,7 @@ function MLABPage() {
                 <Button onClick={() => generateGraphs(true)}>Generate graphs</Button>
 
                 {betweenGraphDataReady && !compareDataLoading && (
-                    <BarChart chartData={betweenGraphData} />
+                    <GraphFactory chartData={betweenGraphData} type={'bar'}/>
                 )}
                 {!betweenGraphDataReady && !compareDataLoading && (
                     <p><i>Please click generate to generate a graph, if you have already clicked generate, please wait a few seconds</i></p>
